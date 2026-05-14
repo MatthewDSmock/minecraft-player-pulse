@@ -29,7 +29,16 @@ st.set_page_config(
 @st.cache_data(ttl=600)
 def load_data() -> pd.DataFrame:
     if not MASTER_PATH.exists():
-        return pd.DataFrame()
+        # Try to download from GitHub Releases (used by deployed instances)
+        with st.spinner("First-time setup: fetching dataset from GitHub Releases..."):
+            try:
+                from download_data import download
+                ok = download()
+                if not ok:
+                    return pd.DataFrame()
+            except Exception as e:
+                st.error(f"Could not fetch dataset: {e}")
+                return pd.DataFrame()
     df = pd.read_parquet(MASTER_PATH)
     df["created_utc"] = pd.to_datetime(df["created_utc"], utc=True)
     df["created_date"] = df["created_utc"].dt.date
