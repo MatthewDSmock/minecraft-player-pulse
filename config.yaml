@@ -1,0 +1,68 @@
+# Minecraft Player Pulse — scraper configuration
+# Edit this to expand subreddits, pillar keyword sets, or scrape volume.
+
+subreddits:
+  - Minecraft
+  - MinecraftMarketplace
+  - minecraftsuggestions
+  - MinecraftMemes  # for cultural temperature
+  - admincraft      # for server/realm power-user perspective
+
+# Pillar classification is keyword-based. A record can match multiple pillars.
+# Keep keywords specific — generic terms like "money" or "expensive" go in a
+# separate sentiment-modifier list rather than here.
+pillar_keywords:
+  Marketplace:
+    - marketplace
+    - skin pack
+    - skinpack
+    - mash-up
+    - mash up
+    - mashup pack
+    - texture pack
+    - world template
+    - adventure map
+    - minecoin
+    - minecoins
+    - mojang creator
+    - paid content
+    - bedrock store
+    - in-game store
+    - in game store
+
+  Realms:
+    - realms plus
+    - realm plus
+    - realms server
+    - realm server
+    - realms subscription
+    - realm subscription
+    - player cap
+    - player limit
+    - friends server
+    - private server
+    - realm host
+    - 10 player
+    - 10-player
+    - realms renewal
+
+  CreatorOnDemand:
+    - creator program
+    - partner program
+    - creator earnings
+    - creator payout
+    - creator revenue
+    - publisher partner
+    - waypoint studios
+    - noxcrew
+    - blockworks
+    - mojang partner
+    - creator dashboard
+
+scrape_limits:
+  posts_per_subreddit: 500       # newest posts to consider per subreddit per run
+  comments_per_post: 200         # top-level comments to fetch per post
+
+storage:
+  output_dir: data/raw           # one timestamped parquet per run (audit trail)
+  master_file: data/processed/minecraft_sentiment.parquet
