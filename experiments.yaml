@@ -1,0 +1,422 @@
+# experiments.yaml
+# Maps each experiment in the backlog to keywords/patterns in the player-voice data.
+# The Insights page uses this to compute evidence counts, surface supporting quotes,
+# and rank experiments by current signal strength.
+#
+# Schema per experiment:
+#   experiment_id    – stable ID, format: [PILLAR]-[LEVER]-[##]
+#   name             – short human-readable label
+#   pillar           – primary monetization pillar this serves
+#                      MUST be one of: Marketplace, Realms, CreatorOnDemand, Cross-pillar
+#                      Records are pillar-gated EXCEPT Cross-pillar (which matches anywhere)
+#   sentiment_focus  – which sentiment band is most relevant for evidence
+#                      (negative = complaints, positive = praise, all = both)
+#   keywords         – phrases to match against lowercased title+body
+#                      MATCHING IS WORD-BOUNDARY AWARE: "family" won't match "familiar"
+#                      Phrases with spaces are matched as substrings of the full text
+#   evidence_summary – one-sentence rationale shown in Insights page
+#   priority_hint    – static ranking floor; data signal can push higher
+#                      (1 = top tier, 5 = experimental)
+
+experiments:
+
+  # ===== CROSS-PILLAR =====
+
+  - experiment_id: XP-BUNDLE-01
+    name: Family / Mob Plan
+    pillar: Cross-pillar
+    sentiment_focus: all
+    keywords:
+      - family plan
+      - family subscription
+      - household subscription
+      - share with my family
+      - shared account
+      - shared subscription
+      - multiple accounts
+      - my whole family
+      - my brother bought
+      - my sister bought
+      - my kid plays
+      - my son plays
+      - my daughter plays
+      - sibling plays
+    evidence_summary: >
+      Households running multiple Minecraft subscriptions consistently surface
+      friction around managing per-account purchases and accessing each other's
+      content. Strongest player validation signal in qualitative interviews.
+    priority_hint: 1
+
+  - experiment_id: XP-BUNDLE-03
+    name: Shared multi-account content portability
+    pillar: Cross-pillar
+    sentiment_focus: negative
+    keywords:
+      - buy it again
+      - bought it twice
+      - already paid
+      - have to buy again
+      - bought on my account
+      - on my other account
+      - paid for it on
+      - transfer my purchase
+      - linked accounts
+    evidence_summary: >
+      Players who own content on one account can't use it on another within
+      the same household — common pain point for parents managing kids' accounts
+      and for players moving across devices.
+    priority_hint: 2
+
+  - experiment_id: MP-BUNDLE-01
+    name: Branded-IP bundles with Realms trial
+    pillar: Cross-pillar
+    sentiment_focus: positive
+    keywords:
+      - bluey
+      - pac-man
+      - pacman
+      - superman
+      - sonic the hedgehog
+      - branded content
+      - licensed content
+      - movie tie-in
+      - bundled with
+      - free month of realms
+    evidence_summary: >
+      Branded IP content (Bluey, Pac-Man, Superman) under-monetizes because
+      the play-with-family use case isn't enabled at purchase. Bundling
+      licensed content with short-term Realms access activates the social
+      use case that justifies the purchase.
+    priority_hint: 3
+
+  # ===== REALMS =====
+
+  - experiment_id: RM-TIER-01
+    name: Higher-capacity Realms tiers (25 / 50 / 75 / 100 players)
+    pillar: Realms
+    sentiment_focus: negative
+    keywords:
+      - 10 player limit
+      - 10 player cap
+      - 10-player limit
+      - 10-player cap
+      - 10 player realm
+      - 10-player realm
+      - need more slots
+      - more slots
+      - realm too small
+      - bigger realm
+      - larger realm
+      - realm size
+      - max players
+      - player limit
+      - players limit
+      - player cap
+    evidence_summary: >
+      Players hit the 10-player Realms cap and explicitly state willingness
+      to pay for higher-capacity tiers. Tier ladder of 25/50/75/100 emerged
+      from player co-design conversations.
+    priority_hint: 1
+
+  - experiment_id: RM-SOCIAL-01
+    name: Co-play / split-screen P2 content ingestion
+    pillar: Realms
+    sentiment_focus: negative
+    keywords:
+      - split screen
+      - splitscreen
+      - couch co-op
+      - couch coop
+      - local multiplayer
+      - second player
+      - player two
+      - shared screen
+      - same screen
+      - one console
+    evidence_summary: >
+      Specific known gap: Player 2 in split-screen sessions inherits
+      Player 1's owned content rather than their own. Testable as a
+      session-duration and co-play retention experiment.
+    priority_hint: 2
+
+  - experiment_id: RM-CONNECT-01
+    name: Easier friend connection in Realms
+    pillar: Realms
+    sentiment_focus: negative
+    keywords:
+      - cant add friends
+      - can't add friends
+      - cant invite friends
+      - can't invite friends
+      - friend code doesn't
+      - friend code not working
+      - crossplay broken
+      - cross-play broken
+      - crossplay doesn't
+      - cross-play doesn't
+      - cant find my friend
+      - can't find my friend
+      - cant join realm
+      - can't join realm
+      - friends cant join
+      - friends can't join
+      - hard to add friends
+      - difficult to invite
+      - connection issues
+    evidence_summary: >
+      When friend connection breaks, players surface it as the most painful
+      friction in Realms — more than cosmetics or content. No current SKU
+      addresses social-plumbing reliability; a category of experiments worth
+      scoping around invite friction, cross-platform handshake, and friend
+      discovery within the Minecraft launcher.
+    priority_hint: 3
+
+  - experiment_id: RM-RETENTION-01
+    name: Realms auto-renewal transparency and reminder
+    pillar: Realms
+    sentiment_focus: negative
+    keywords:
+      - auto renew
+      - auto-renew
+      - automatic renewal
+      - forgot to cancel
+      - charged me again
+      - charged again
+      - cancel my subscription
+      - cancel realms
+      - hidden subscription
+      - didn't know i was paying
+    evidence_summary: >
+      Trustpilot reviews for Realms are dominated by auto-renewal surprise
+      complaints. Subscription transparency experiments (renewal reminders,
+      easier cancellation, usage-based pause options) protect long-term
+      brand trust without permanently eroding ARPU.
+    priority_hint: 2
+
+  # ===== MARKETPLACE =====
+
+  - experiment_id: MP-REFUND-01
+    name: 30-minute Marketplace refund window (Steam-style policy)
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - refund
+      - refunded
+      - money back
+      - get my money
+      - can't return
+      - cant return
+      - cannot return
+      - wasted money
+      - waste of minecoins
+      - wasted minecoins
+      - wasted my minecoins
+      - buyer's remorse
+      - regret buying
+      - regret purchase
+      - want my money back
+      - return policy
+    evidence_summary: >
+      Players express purchase regret with no recovery path. Steam's policy
+      (under 2hr played + under 2wk owned, no questions asked) is the
+      industry-standard reference. Apple App Store and Google Play both
+      offer comparable mechanisms. Marketplace lacks this entirely — a
+      proven mechanism, not a novel experiment.
+    priority_hint: 1
+
+  - experiment_id: MP-LISTING-01
+    name: Gameplay-image requirement for Marketplace listings (Steam policy)
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - false advertising
+      - looks different
+      - not what i expected
+      - misleading
+      - misleading thumbnail
+      - thumbnail looks
+      - preview image
+      - screenshot doesn't
+      - screenshots don't
+      - looks nothing like
+      - art doesn't match
+      - artwork is misleading
+    evidence_summary: >
+      Marketplace listings rely heavily on artwork that may not reflect
+      actual gameplay. Steam implemented a policy years ago requiring all
+      store images and videos to use actual gameplay — fixing the same
+      upstream information asymmetry at a fraction of the dev cost of
+      full demo support.
+    priority_hint: 2
+
+  - experiment_id: MP-REVIEW-01
+    name: Rate-to-earn Minecoin reward for Marketplace reviews
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - no reviews
+      - zero reviews
+      - no ratings
+      - no rating
+      - rating system
+      - more reviews
+      - more ratings
+      - sketchy
+      - looks sketchy
+      - is this any good
+      - is it worth
+      - worth buying
+    evidence_summary: >
+      Most Marketplace items have zero or near-zero ratings, eroding
+      purchase confidence. Earning ~25% of item cost in Minecoins per
+      review (validated reward sizing) drives review density and creates
+      "almost-enough" Minecoin moments that lift subsequent conversion.
+    priority_hint: 2
+
+  - experiment_id: MP-TRIAL-01
+    name: Try-before-you-buy demos for Marketplace items
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - try before
+      - try it before
+      - demo version
+      - free demo
+      - free preview
+      - sample first
+      - test it out
+      - try it first
+      - free trial of
+    evidence_summary: >
+      Players want to experience Marketplace content before committing.
+      Higher dev cost than the listing-image policy change but addresses
+      the same upstream information asymmetry. Steam, Epic, and consoles
+      all support demos as a category.
+    priority_hint: 3
+
+  - experiment_id: MP-PARENT-01
+    name: Parental cosmetic-spending controls and visibility
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - my kid spent
+      - kids spending
+      - kid bought
+      - my child bought
+      - parental controls
+      - spending limit
+      - spending cap
+      - spending alert
+      - my son bought
+      - my daughter bought
+      - charged for skins
+      - too much money on skins
+      - microtransactions
+    evidence_summary: >
+      Parents flag cosmetic spending as the dominant friction with
+      kid-purchased content. Naive solution (cheaper skins) erodes ARPU.
+      Smart solution: spending visibility and weekly budget tools that
+      preserve ARPU while reducing parent surprise. Trust & Safety crossover.
+    priority_hint: 2
+
+  - experiment_id: MP-SEARCH-01
+    name: Marketplace search and discovery improvements
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - can't find
+      - cant find
+      - hard to find
+      - search results
+      - search marketplace
+      - find anything
+      - poorly organized
+      - bad search
+      - filter options
+    evidence_summary: >
+      Players report difficulty finding specific content in Marketplace.
+      Search and discovery improvements can lift conversion by reducing
+      the time-to-purchase gap and surfacing long-tail content that
+      currently goes undiscovered.
+    priority_hint: 3
+
+  # ===== CREATOR ON DEMAND =====
+
+  - experiment_id: MP-MODERATION-01
+    name: Marketplace content provenance & creator attribution
+    pillar: Marketplace
+    sentiment_focus: negative
+    keywords:
+      - stolen
+      - stole
+      - plagiarized
+      - plagiarism
+      - copied without permission
+      - without permission
+      - original creator
+      - ripped off
+      - ripped from
+      - took my content
+      - took our content
+      - claims my work
+      - claims our work
+      - reupload
+      - re-upload
+      - reuploaded
+      - re-uploaded
+      - knock off
+      - knockoff
+      - fake version
+    evidence_summary: >
+      The single highest-upvoted record in the dataset (18,700 upvotes) is a
+      report of stolen Marketplace content. Players surface IP-attribution
+      and content-provenance complaints regularly. Microsoft has trust-and-safety
+      and creator-relations exposure here. Smart solution: provenance verification
+      pass for submissions + dispute escalation channel, framed as protecting
+      legitimate creators (which preserves Marketplace supply integrity).
+    priority_hint: 1
+
+  - experiment_id: CD-REVIEW-01
+    name: "Creator on Demand: audience-validation research pass"
+    pillar: CreatorOnDemand
+    sentiment_focus: negative
+    keywords:
+      - hire a builder
+      - hire a creator
+      - hire someone to build
+      - commission a build
+      - commission a builder
+      - paid to build
+      - paid builder
+      - freelance builder
+      - made to order
+      - custom map for me
+      - custom build for
+      - someone to make
+      - someone build for me
+    evidence_summary: >
+      Creator on Demand barely surfaces in public channels, which itself is
+      a finding: players aren't discussing CoD because they don't know it
+      exists, it doesn't apply to them, or the use case is too niche. Before
+      designing experiments, an audience research pass is needed — who is
+      CoD actually for, and are we surfacing it to that audience?
+    priority_hint: 4
+
+  - experiment_id: CD-PRICING-01
+    name: Creator on Demand price-discovery experiments
+    pillar: CreatorOnDemand
+    sentiment_focus: all
+    keywords:
+      - too expensive
+      - overpriced
+      - not worth the price
+      - price is too high
+      - cheaper option
+      - more affordable
+      - price point
+    evidence_summary: >
+      If CoD audience validation surfaces price as a barrier, structured
+      price-discovery experiments (anchoring, tiered options, bundle
+      discounting) can map willingness-to-pay before any pricing decision
+      is locked in.
+    priority_hint: 4
