@@ -3,102 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matthew D. Smock — Data Science Lab</title>
+    <title>Matthew D. Smock — Data Science Lab (Tron Variant B — Hybrid Walls)</title>
     <meta name="description" content="Senior data scientist working on game monetization, player experience, and applied analytics. Public lab for sentiment models, experiment design, and the writeups that survive.">
     <meta property="og:title" content="Matthew D. Smock — Data Science Lab">
     <meta property="og:description" content="Senior data scientist working on game monetization, player experience, and applied analytics.">
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Inline control hint that appears below the User bike spawn position.
-           Styled to match the "See current work" primary CTA — glowing cyan,
-           same shadow and hover behavior, so it reads as a sibling element. */
-        .control-hint-inline {
-            position: absolute;
-            z-index: 4;
-            transform: translateX(-50%);
-            padding: 12px 22px;
-            background: rgba(0, 245, 255, 0.95);
-            color: #000810;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border-radius: 6px;
-            border: 1px solid #00f5ff;
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.5), 0 0 40px rgba(0, 245, 255, 0.25);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            white-space: nowrap;
-            text-align: center;
-            font-weight: 600;
-        }
-        .control-hint-inline.visible {
-            opacity: 1;
-            animation: control-hint-pulse 2.2s ease-in-out infinite;
-        }
-        .control-hint-inline .arrow-row {
-            font-size: 14px;
-            letter-spacing: 6px;
-            display: block;
-            margin-bottom: 3px;
-        }
-        @keyframes control-hint-pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.5), 0 0 40px rgba(0, 245, 255, 0.25); }
-            50%      { box-shadow: 0 0 28px rgba(0, 245, 255, 0.7), 0 0 56px rgba(0, 245, 255, 0.4); }
-        }
-
-        /* HUD "TAKE CONTROL" button (bottom-right, when control mode is off) */
-        .hud-block.hud-control-hint {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            cursor: pointer;
-            pointer-events: auto;
-            user-select: none;
-            transition: background 0.2s, border-color 0.2s;
-        }
-        .hud-block.hud-control-hint:hover {
-            background: rgba(0, 245, 255, 0.15) !important;
-            border-color: #00f5ff !important;
-        }
-        .hud-block.hud-control-hint .keycap {
-            display: inline-block;
-            border: 1px solid rgba(0, 245, 255, 0.5);
-            padding: 1px 5px;
-            margin-right: 4px;
-            font-size: 10px;
-        }
-        body.control-mode .hero-content {
-            opacity: 0.5;
-            transition: opacity 0.4s ease;
-        }
-        .control-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #00f5ff;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px #00f5ff;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            z-index: 4;
-        }
-        .control-overlay.visible { opacity: 1; }
-        .control-overlay .small {
-            font-size: 9px;
-            letter-spacing: 2px;
-            opacity: 0.7;
-            margin-top: 8px;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -117,8 +27,8 @@
             <canvas id="tron-canvas" aria-hidden="true"></canvas>
             <div class="hero-tron-hud" aria-hidden="true">
                 <div class="hud-block hud-top-left">
-                    <div class="hud-label">// LAB</div>
-                    <div class="hud-value">SESSION 01</div>
+                    <div class="hud-label">// LAB · VARIANT B</div>
+                    <div class="hud-value">HYBRID WALLS</div>
                 </div>
                 <div class="hud-block hud-top-right">
                     <div class="hud-label">// SECTOR</div>
@@ -126,20 +36,8 @@
                 </div>
                 <div class="hud-block hud-bottom-left">
                     <div class="hud-label">// STATUS</div>
-                    <div class="hud-value" id="hud-status">LAB OPEN</div>
+                    <div class="hud-value">LAB OPEN</div>
                 </div>
-                <div class="hud-block hud-control-hint" id="control-toggle" aria-label="Reset user program">
-                    <div class="hud-label">// USER PROGRAM</div>
-                    <div class="hud-value"><span class="keycap">T</span>RESPAWN</div>
-                </div>
-            </div>
-            <div class="control-overlay" id="control-overlay">
-                USER ON GRID
-                <div class="small">◄ ▲ ► steer · ESC exit</div>
-            </div>
-            <div class="control-hint-inline" id="control-hint-inline">
-                <span class="arrow-row">◄ ▲ ▼ ►</span>
-                Take Control
             </div>
             <div class="hero-content">
                 <p class="eyebrow">Data Science Lab</p>
@@ -167,7 +65,7 @@
                 back to its source.
             </p>
             <div class="card-grid">
-                <a class="card" href="intro-formation.html">
+                <a class="card" href="intro.html">
                     <div class="card-tag">Live dashboard</div>
                     <h3>Player Pulse →</h3>
                     <p>
@@ -236,20 +134,19 @@
     </footer>
 
     <script>
-    // ─── Tron Light Cycle Background ────────────────────────────────────────
-    // Modern Tron: Legacy aesthetic. Canon color hierarchy:
-    //   Cyan/Blue   — Users / loyal programs (player-controlled)
-    //   Orange/Red  — Corrupted / antagonist programs
-    //   Yellow      — Administrative programs (Clu-aligned mid-tier)
-    //   Gold        — Top-tier authority (rare, dangerous)
-    //   White       — ISOs / digitized purity (rare)
+    // ─── Tron Light Cycle Background — VARIANT B: Hybrid Walls ──────────────
+    // Each cycle's most recent N segments count as collidable wall. Older
+    // segments are visual-only and fade out gracefully — the screen stays
+    // clean indefinitely. Cycles still die from collisions, just against the
+    // "live" portion of the wall trail.
     //
-    // Walls persist until the cycle dies — true Tron mechanic.
-    // Press T to take control of a cyan User cycle. ESC exits.
+    // Collision: bug-zapper flash with electric arcs + drifting sparks
     (function() {
         const canvas = document.getElementById('tron-canvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
+
+        const MAX_WALL_SEGMENTS = 140;  // segments behind cycle that count as a wall
 
         let W = 0, H = 0;
         function resize() {
@@ -262,28 +159,16 @@
         resize();
         window.addEventListener('resize', resize);
 
-        const COLOR = {
-            USER:     '#00f5ff',
-            RED:      '#ff1a1a',  // pure red — distinct from orange
-            ORANGE:   '#ff7a00',  // pure orange — Clu-aligned antagonist
-            ADMIN:    '#ffd60a',  // yellow — administrative
-            GOLD:     '#ffb800',  // gold — top authority (rare)
-            ISO:      '#ffffff',  // white — ISO (rare)
-        };
-        const SPAWN_POOL = [
-            COLOR.RED,    COLOR.RED,    COLOR.RED,
-            COLOR.ORANGE, COLOR.ORANGE,
-            COLOR.ADMIN,  COLOR.ADMIN,
-            COLOR.GOLD,
-            COLOR.ISO,
-        ];
-        const BG = '#000810';
+        // Color palette — 4 cycle colors
+        const COLORS = ['#00f5ff', '#ff6a00', '#aa44ff', '#5cff8a'];
         const GRID = 'rgba(0, 51, 68, 0.6)';
-        const WHITE_GLOW = '#ffffff';
+        const WHITE = '#ffffff';
+        const BG = '#000810';
 
+        // Playfield bounds — leave room above for content
         function playfield() {
             return {
-                top: 20,           // just below the nav bar margin — full hero playable
+                top: H * 0.20,
                 bottom: H - 20,
                 left: 40,
                 right: W - 40,
@@ -292,6 +177,7 @@
 
         let t = 0;
 
+        // ─── BACKGROUND DRAWING ───────────────────────────────────────────────
         function drawGrid() {
             ctx.strokeStyle = GRID;
             ctx.lineWidth = 0.6;
@@ -322,7 +208,7 @@
         function drawHorizonGlow() {
             const hy = H * 0.52;
             ctx.globalAlpha = 0.20;
-            ctx.fillStyle = COLOR.USER;
+            ctx.fillStyle = '#00f5ff';
             ctx.fillRect(0, hy - 2, W, 4);
             ctx.globalAlpha = 0.08;
             ctx.fillRect(0, hy - 14, W, 24);
@@ -344,80 +230,74 @@
         function drawScanline() {
             const sy = (t * 1.5) % H;
             ctx.globalAlpha = 0.04;
-            ctx.fillStyle = COLOR.USER;
+            ctx.fillStyle = '#00f5ff';
             ctx.fillRect(0, sy, W, 3);
             ctx.globalAlpha = 1;
         }
 
-        // Legacy-style light cycle
-        function drawCycle(x, y, dir, color, scale = 1) {
+        // ─── MOTORCYCLE ───────────────────────────────────────────────────────
+        // Side-profile light cycle: rectangular body with two wheels and a rider.
+        // Drawn rotated to match direction of travel.
+        function drawMotorcycle(x, y, dir, color, scale = 1) {
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(dir);
             const s = scale;
             ctx.shadowColor = color;
-            ctx.shadowBlur = 14;
+            ctx.shadowBlur = 12;
 
-            // Two large hubless wheels — drawn as outline rings with dark fill
+            // Two wheels (front and back)
             ctx.fillStyle = '#000810';
             ctx.strokeStyle = color;
-            ctx.lineWidth = 2 * s;
+            ctx.lineWidth = 1.5;
+            // Back wheel
             ctx.beginPath();
-            ctx.arc(11 * s, 0, 6 * s, 0, Math.PI * 2);
+            ctx.arc(-7 * s, 0, 4 * s, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
-            ctx.lineWidth = 1 * s;
-            ctx.globalAlpha = 0.6;
+            // Front wheel
             ctx.beginPath();
-            ctx.arc(11 * s, 0, 3 * s, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-            ctx.lineWidth = 2 * s;
-            ctx.beginPath();
-            ctx.arc(-11 * s, 0, 6 * s, 0, Math.PI * 2);
+            ctx.arc(7 * s, 0, 4 * s, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
-            ctx.lineWidth = 1 * s;
-            ctx.globalAlpha = 0.6;
-            ctx.beginPath();
-            ctx.arc(-11 * s, 0, 3 * s, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.globalAlpha = 1;
 
-            // Body — long low capsule, tapered nose, rider implied by hump
+            // Body — elongated shape between wheels with a slight fairing
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(11 * s, -1 * s);   // front nose
+            ctx.lineTo(10 * s, -4 * s);   // top of front fairing
+            ctx.lineTo(0, -4 * s);        // top of body
+            ctx.lineTo(-8 * s, -3 * s);   // back of seat
+            ctx.lineTo(-11 * s, -1 * s);  // tail
+            ctx.lineTo(-11 * s, 1 * s);
+            ctx.lineTo(11 * s, 1 * s);
+            ctx.closePath();
+            ctx.fill();
+
+            // Rider silhouette
             ctx.fillStyle = color;
             ctx.globalAlpha = 0.9;
             ctx.beginPath();
-            ctx.moveTo(15 * s, -1 * s);
-            ctx.lineTo(13 * s, -3 * s);
-            ctx.lineTo(5 * s, -4.5 * s);
-            ctx.lineTo(-2 * s, -5 * s);
-            ctx.lineTo(-9 * s, -3.5 * s);
-            ctx.lineTo(-15 * s, -1 * s);
-            ctx.lineTo(-15 * s, 1 * s);
-            ctx.lineTo(15 * s, 1 * s);
-            ctx.closePath();
+            ctx.ellipse(-2 * s, -6 * s, 3 * s, 4 * s, 0, 0, Math.PI * 2);  // torso
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(-1 * s, -10 * s, 2 * s, 0, Math.PI * 2);  // helmet
             ctx.fill();
             ctx.globalAlpha = 1;
 
-            // Lightribbon stripe
-            ctx.fillStyle = WHITE_GLOW;
-            ctx.shadowBlur = 8;
-            ctx.globalAlpha = 0.85;
-            ctx.fillRect(-13 * s, -3.2 * s, 22 * s, 0.8 * s);
-            ctx.globalAlpha = 1;
-
-            // Headlight
-            ctx.fillStyle = WHITE_GLOW;
-            ctx.shadowBlur = 22;
+            // Headlight glow
+            ctx.fillStyle = WHITE;
+            ctx.shadowBlur = 20;
             ctx.beginPath();
-            ctx.arc(16 * s, 0, 1.8 * s, 0, Math.PI * 2);
+            ctx.arc(12 * s, 0, 1.5 * s, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.restore();
             ctx.shadowBlur = 0;
         }
 
+        // ─── COLLISION GEOMETRY ────────────────────────────────────────────────
+        // Distance from point P to line segment AB
         function distPointToSegment(px, py, ax, ay, bx, by) {
             const dx = bx - ax;
             const dy = by - ay;
@@ -436,36 +316,41 @@
             return Math.sqrt(ex * ex + ey * ey);
         }
 
-        // ─── EXPLOSION with dense filled core ─────────────────────────────
+        // ─── EXPLOSION (bug-zapper flash) ─────────────────────────────────────
         class Explosion {
             constructor(x, y, color) {
                 this.x = x;
                 this.y = y;
                 this.color = color;
                 this.age = 0;
-                this.maxAge = 32;
-                this.coreSize = 22;
+                this.maxAge = 28;  // ~470ms at 60fps
+                // Pre-generate jagged electric arcs radiating outward
                 this.arcs = [];
-                const arcCount = 8;
+                const arcCount = 7;
                 for (let i = 0; i < arcCount; i++) {
                     const baseAngle = (i / arcCount) * Math.PI * 2 + Math.random() * 0.5;
                     const points = [{ x: 0, y: 0 }];
                     let r = 0;
                     const segments = 5 + Math.floor(Math.random() * 3);
                     for (let j = 0; j < segments; j++) {
-                        r += 10 + Math.random() * 7;
+                        r += 8 + Math.random() * 6;
                         const wobble = (Math.random() - 0.5) * 0.7;
                         const a = baseAngle + wobble;
-                        points.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+                        points.push({
+                            x: Math.cos(a) * r,
+                            y: Math.sin(a) * r,
+                        });
                     }
                     this.arcs.push(points);
                 }
+                // Drifting sparks
                 this.sparks = [];
-                for (let i = 0; i < 14; i++) {
+                for (let i = 0; i < 12; i++) {
                     const a = Math.random() * Math.PI * 2;
                     const v = 1.5 + Math.random() * 3;
                     this.sparks.push({
-                        x: 0, y: 0,
+                        x: 0,
+                        y: 0,
                         vx: Math.cos(a) * v,
                         vy: Math.sin(a) * v - 0.5,
                         life: 1.0,
@@ -478,58 +363,38 @@
                 this.sparks.forEach(s => {
                     s.x += s.vx;
                     s.y += s.vy;
-                    s.vy += 0.15;
+                    s.vy += 0.15;  // gravity
                     s.vx *= 0.97;
                     s.life = Math.max(0, 1 - this.age / this.maxAge);
                 });
             }
             draw() {
-                const p = this.age / this.maxAge;
+                const p = this.age / this.maxAge;          // 0..1
+                const flash = Math.max(0, 1 - p * 2);      // bright early, fades fast
                 ctx.save();
                 ctx.translate(this.x, this.y);
 
-                const coreLife = Math.max(0, 1 - p * 1.3);
-                if (coreLife > 0) {
-                    // Outer halo
-                    const haloR = this.coreSize * 2.5;
-                    const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, haloR);
-                    halo.addColorStop(0, `rgba(255, 255, 255, ${coreLife * 0.9})`);
-                    halo.addColorStop(0.25, `rgba(0, 245, 255, ${coreLife * 0.7})`);
-                    halo.addColorStop(0.6, `rgba(0, 245, 255, ${coreLife * 0.3})`);
-                    halo.addColorStop(1, 'rgba(0, 245, 255, 0)');
-                    ctx.fillStyle = halo;
+                // Central white-hot flash
+                if (flash > 0) {
+                    const r = 30 * flash;
+                    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+                    grad.addColorStop(0, `rgba(255, 255, 255, ${flash})`);
+                    grad.addColorStop(0.3, `rgba(0, 245, 255, ${flash * 0.8})`);
+                    grad.addColorStop(1, 'rgba(0, 245, 255, 0)');
+                    ctx.fillStyle = grad;
                     ctx.beginPath();
-                    ctx.arc(0, 0, haloR, 0, Math.PI * 2);
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Dense filled core — solid white-hot disc
-                    const coreFlash = Math.max(0, 1 - p * 2.5);
-                    if (coreFlash > 0) {
-                        const r = this.coreSize * (0.7 + 0.3 * (1 - coreFlash));
-                        ctx.globalAlpha = coreFlash;
-                        const core = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
-                        core.addColorStop(0, '#ffffff');
-                        core.addColorStop(0.5, '#b7f5ff');
-                        core.addColorStop(0.85, '#00f5ff');
-                        core.addColorStop(1, 'rgba(0, 245, 255, 0.4)');
-                        ctx.fillStyle = core;
-                        ctx.shadowColor = COLOR.USER;
-                        ctx.shadowBlur = 30;
-                        ctx.beginPath();
-                        ctx.arc(0, 0, r, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.globalAlpha = 1;
-                        ctx.shadowBlur = 0;
-                    }
                 }
 
+                // Electric arcs
                 const arcAlpha = Math.max(0, 1 - p * 1.5);
                 if (arcAlpha > 0) {
                     ctx.strokeStyle = `rgba(0, 245, 255, ${arcAlpha})`;
-                    ctx.shadowColor = COLOR.USER;
-                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#00f5ff';
+                    ctx.shadowBlur = 8;
                     ctx.lineWidth = 1.5;
-                    const arcGrow = Math.min(1, p * 2);
+                    const arcGrow = Math.min(1, p * 2);  // arcs extend out then fade
                     this.arcs.forEach(arc => {
                         ctx.beginPath();
                         ctx.moveTo(0, 0);
@@ -542,8 +407,9 @@
                     ctx.shadowBlur = 0;
                 }
 
+                // Sparks
                 ctx.fillStyle = '#e0f8ff';
-                ctx.shadowColor = COLOR.USER;
+                ctx.shadowColor = '#00f5ff';
                 ctx.shadowBlur = 4;
                 this.sparks.forEach(s => {
                     ctx.globalAlpha = s.life;
@@ -556,6 +422,7 @@
             }
         }
 
+        // ─── SPAWN EFFECT (materialize zap, inverse of explosion) ─────────────
         class Spawn {
             constructor(x, y, color) {
                 this.x = x;
@@ -580,6 +447,7 @@
                 ctx.beginPath();
                 ctx.arc(0, 0, r, 0, Math.PI * 2);
                 ctx.stroke();
+                // Inward-pointing tick marks
                 for (let i = 0; i < 6; i++) {
                     const a = (i / 6) * Math.PI * 2;
                     const x1 = Math.cos(a) * r;
@@ -597,8 +465,11 @@
             }
         }
 
+        // ─── LIGHT CYCLE ──────────────────────────────────────────────────────
+        // Trail is a list of {x, y} points. In Variant A, the entire trail is
+        // a collidable wall — it never fades. Trail dies with the cycle.
         class LightCycle {
-            constructor(x, y, dir, color, speed, isUser = false) {
+            constructor(x, y, dir, color, speed) {
                 this.x = x;
                 this.y = y;
                 this.dir = dir;
@@ -607,45 +478,46 @@
                 this.trail = [{ x, y }];
                 this.turnTimer = Math.floor(Math.random() * 80 + 40);
                 this.alive = true;
+                // Brief invulnerability after spawn so we don't immediately self-collide
                 this.spawnGrace = 30;
-                this.isUser = isUser;
-                // User cycle waits in place until first arrow press
-                this.waiting = isUser;
             }
 
             update(allCycles) {
                 if (!this.alive) return null;
 
-                // Waiting state — user cycle sits in place, doesn't move or accrue trail
-                if (this.waiting) return null;
-
                 this.x += Math.cos(this.dir) * this.speed;
                 this.y += Math.sin(this.dir) * this.speed;
                 this.trail.push({ x: this.x, y: this.y });
 
-                if (!this.isUser) {
-                    this.turnTimer--;
-                    if (this.turnTimer <= 0) {
-                        this.dir += (Math.random() < 0.5 ? 1 : -1) * Math.PI / 2;
-                        this.turnTimer = Math.floor(Math.random() * 80 + 40);
-                    }
+                this.turnTimer--;
+                if (this.turnTimer <= 0) {
+                    this.dir += (Math.random() < 0.5 ? 1 : -1) * Math.PI / 2;
+                    this.turnTimer = Math.floor(Math.random() * 80 + 40);
                 }
 
                 const pf = playfield();
                 if (this.x < pf.left || this.x > pf.right ||
                     this.y < pf.top  || this.y > pf.bottom) {
+                    // Wall hit — explode at the edge
                     this.alive = false;
                     return { x: this.x, y: this.y, color: this.color };
                 }
 
-                if (this.spawnGrace > 0) { this.spawnGrace--; return null; }
+                if (this.spawnGrace > 0) {
+                    this.spawnGrace--;
+                    return null;
+                }
 
+                // Collision check against the WALL portion of each trail
+                // (most recent MAX_WALL_SEGMENTS segments only — older segments fade out
+                // and stop being collidable, keeping the screen clean)
                 const collisionRadius = 5;
                 for (const c of allCycles) {
                     const tr = c.trail;
                     const skipRecent = (c === this) ? 6 : 0;
                     const end = tr.length - 1 - skipRecent;
-                    for (let i = 1; i <= end; i++) {
+                    const start = Math.max(1, tr.length - MAX_WALL_SEGMENTS);
+                    for (let i = start; i <= end; i++) {
                         const a = tr[i - 1];
                         const b = tr[i];
                         const d = distPointToSegment(this.x, this.y, a.x, a.y, b.x, b.y);
@@ -655,18 +527,36 @@
                         }
                     }
                 }
+
                 return null;
             }
 
             drawTrail() {
                 if (this.trail.length < 2) return;
-                ctx.strokeStyle = this.color;
                 ctx.shadowColor = this.color;
                 ctx.shadowBlur = 6;
+                // Draw older segments (visual-only, fading) first
+                const olderEnd = Math.max(0, this.trail.length - MAX_WALL_SEGMENTS);
+                for (let i = 1; i < olderEnd; i++) {
+                    // Fade older segments — opacity ramps up as we approach the wall window
+                    const fadeProgress = i / olderEnd;  // 0..1
+                    const alpha = fadeProgress * 0.25;  // peaks at 0.25 just before wall starts
+                    if (alpha < 0.02) continue;
+                    ctx.strokeStyle = this.color;
+                    ctx.globalAlpha = alpha;
+                    ctx.lineWidth = 1.2;
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
+                    ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    ctx.stroke();
+                }
+                // Draw wall segments — full opacity, brighter
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = this.color;
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(this.trail[0].x, this.trail[0].y);
-                for (let i = 1; i < this.trail.length; i++) {
+                ctx.moveTo(this.trail[Math.max(0, olderEnd)].x, this.trail[Math.max(0, olderEnd)].y);
+                for (let i = Math.max(1, olderEnd + 1); i < this.trail.length; i++) {
                     ctx.lineTo(this.trail[i].x, this.trail[i].y);
                 }
                 ctx.stroke();
@@ -675,196 +565,55 @@
 
             drawBike() {
                 if (!this.alive) return;
-                drawCycle(this.x, this.y, this.dir, this.color);
+                drawMotorcycle(this.x, this.y, this.dir, this.color);
             }
         }
 
+        // ─── WORLD STATE ─────────────────────────────────────────────────────
         const TARGET_CYCLES = 7;
         const cycles = [];
         const explosions = [];
         const spawns = [];
-        let userCycle = null;
-        let controlMode = false;
 
         function randomSpawnPosition() {
             const pf = playfield();
             const edge = Math.floor(Math.random() * 4);
             switch (edge) {
-                case 0: return { x: pf.left + Math.random() * (pf.right - pf.left), y: pf.top + 5,  dir:  Math.PI / 2 };
-                case 1: return { x: pf.right - 5, y: pf.top + Math.random() * (pf.bottom - pf.top), dir:  Math.PI };
+                case 0: return { x: pf.left + Math.random() * (pf.right - pf.left), y: pf.top + 5, dir: Math.PI / 2 };
+                case 1: return { x: pf.right - 5, y: pf.top + Math.random() * (pf.bottom - pf.top), dir: Math.PI };
                 case 2: return { x: pf.left + Math.random() * (pf.right - pf.left), y: pf.bottom - 5, dir: -Math.PI / 2 };
-                case 3: return { x: pf.left + 5, y: pf.top + Math.random() * (pf.bottom - pf.top), dir:  0 };
+                case 3: return { x: pf.left + 5, y: pf.top + Math.random() * (pf.bottom - pf.top), dir: 0 };
             }
         }
 
-        function spawnAICycle() {
+        function spawnCycle() {
             const pos = randomSpawnPosition();
-            const color = SPAWN_POOL[Math.floor(Math.random() * SPAWN_POOL.length)];
+            const color = COLORS[Math.floor(Math.random() * COLORS.length)];
             const speed = 1.8 + Math.random() * 1.0;
-            const cycle = new LightCycle(pos.x, pos.y, pos.dir, color, speed, false);
+            const cycle = new LightCycle(pos.x, pos.y, pos.dir, color, speed);
             cycles.push(cycle);
             spawns.push(new Spawn(pos.x, pos.y, color));
-        }
-
-        function spawnUserCycle() {
-            const pf = playfield();
-            // Bottom-right corner of the visible hero — away from headline text on the left.
-            // Uses fixed offsets from the right and bottom edges rather than playfield
-            // percentages, so the visual spawn location stays constant even if the
-            // playfield bounds change.
-            const x = pf.right - 120;
-            const y = pf.bottom - 100;
-            userCycle = new LightCycle(x, y, 0, COLOR.USER, 2.4, true);
-            userCycle.spawnGrace = 60;
-            cycles.push(userCycle);
-            spawns.push(new Spawn(x, y, COLOR.USER));
-            positionControlHint(x, y);
         }
 
         function initCycles() {
             cycles.length = 0;
             explosions.length = 0;
             spawns.length = 0;
-            userCycle = null;
             for (let i = 0; i < TARGET_CYCLES; i++) {
-                setTimeout(spawnAICycle, i * 200);
+                setTimeout(spawnCycle, i * 200);
             }
-            // After the AI cycles finish initializing (~1.4s), the User cycle
-            // materializes in the bottom-right. The page narrative becomes:
-            // "AI programs initialize, then YOU arrive on the grid."
-            setTimeout(() => {
-                if (!controlMode) enterControl();
-            }, 1500);
         }
         initCycles();
         window.addEventListener('resize', initCycles);
 
-        const overlay = document.getElementById('control-overlay');
-        const statusEl = document.getElementById('hud-status');
-        const toggleEl = document.getElementById('control-toggle');
-        const hintInline = document.getElementById('control-hint-inline');
-
-        // Track how many times the user has crashed — after a couple, suppress
-        // the inline call-to-action because they've clearly learned the controls
-        let crashCount = 0;
-
-        function positionControlHint(bikeX, bikeY) {
-            if (!hintInline) return;
-            hintInline.style.left = bikeX + 'px';
-            hintInline.style.top = (bikeY + 30) + 'px';
-            // Only show the glowing hint for the first few spawns — after that
-            // the user knows the controls and a flashing button gets annoying
-            if (crashCount < 2) {
-                hintInline.classList.add('visible');
-            }
-        }
-        function hideControlHint() {
-            if (!hintInline) return;
-            hintInline.classList.remove('visible');
-        }
-
-        function enterControl() {
-            if (controlMode) return;
-            controlMode = true;
-            document.body.classList.add('control-mode');
-            if (statusEl) statusEl.textContent = 'READY · PRESS ARROW';
-            spawnUserCycle();
-        }
-        function exitControl() {
-            if (!controlMode) return;
-            controlMode = false;
-            document.body.classList.remove('control-mode');
-            overlay.classList.remove('visible');
-            hideControlHint();
-            if (statusEl) statusEl.textContent = 'LAB OPEN';
-            if (userCycle && userCycle.alive) {
-                explosions.push(new Explosion(userCycle.x, userCycle.y, userCycle.color));
-                userCycle.alive = false;
-            }
-            userCycle = null;
-        }
-
-        // HUD block — clicking it is now a soft "respawn user" rather than an
-        // entry point, since the user is already on the grid. Click to bail.
-        toggleEl.addEventListener('click', () => {
-            if (controlMode) {
-                exitControl();
-                // Respawn after a brief beat so the lab always has a User on grid
-                setTimeout(() => { if (!controlMode) enterControl(); }, 800);
-            } else {
-                enterControl();
-            }
-        });
-
-        // Inline hint is also clickable as a fallback for users who don't
-        // want to use the keyboard — clicking it auto-kicks the bike rightward
-        if (hintInline) {
-            hintInline.style.pointerEvents = 'auto';
-            hintInline.style.cursor = 'pointer';
-            hintInline.addEventListener('click', () => {
-                if (!controlMode) enterControl();
-                if (userCycle && userCycle.waiting) {
-                    userCycle.waiting = false;
-                    userCycle.dir = 0;  // start moving right
-                    hideControlHint();
-                }
-            });
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            if (e.key === 't' || e.key === 'T') {
-                e.preventDefault();
-                // Respawn the user — kill current bike (if alive) and create a fresh
-                // waiting bike at the spawn position.
-                if (userCycle && userCycle.alive) {
-                    explosions.push(new Explosion(userCycle.x, userCycle.y, userCycle.color));
-                    userCycle.alive = false;
-                    crashCount++;
-                    // The death loop will auto-respawn after the standard 1.4s delay
-                } else if (!controlMode) {
-                    enterControl();
-                }
-                return;
-            }
-            if (e.key === 'Escape') {
-                if (controlMode) { e.preventDefault(); exitControl(); }
-                return;
-            }
-            if (!controlMode || !userCycle || !userCycle.alive) return;
-
-            // First arrow press kicks the user cycle out of waiting state
-            // and sets its initial heading. Subsequent presses turn it.
-            let arrowDir = null;
-            switch (e.key) {
-                case 'ArrowUp':    arrowDir = -Math.PI / 2; break;
-                case 'ArrowDown':  arrowDir =  Math.PI / 2; break;
-                case 'ArrowLeft':  arrowDir =  Math.PI;     break;
-                case 'ArrowRight': arrowDir =  0;           break;
-            }
-            if (arrowDir === null) return;
-            e.preventDefault();
-
-            if (userCycle.waiting) {
-                userCycle.waiting = false;
-                userCycle.dir = arrowDir;
-                hideControlHint();
-                if (statusEl) statusEl.textContent = 'USER ON GRID';
-            } else {
-                // Standard turn — only change direction if it's actually different
-                if (Math.abs(userCycle.dir - arrowDir) > 0.1) {
-                    userCycle.dir = arrowDir;
-                }
-            }
-        });
-
+        // ─── VISIBILITY OBSERVER (pause when off-screen) ─────────────────────
         let isVisible = true;
         const io = new IntersectionObserver((entries) => {
             isVisible = entries[0].isIntersecting;
         });
         io.observe(canvas);
 
+        // ─── MAIN LOOP ───────────────────────────────────────────────────────
         function frame() {
             if (isVisible) {
                 ctx.fillStyle = BG;
@@ -873,42 +622,31 @@
                 drawGrid();
                 drawHorizonGlow();
 
+                // Draw all trails first (under bikes)
                 cycles.forEach(c => c.drawTrail());
 
+                // Update + collision check
                 for (const c of cycles) {
                     const death = c.update(cycles);
                     if (death) explosions.push(new Explosion(death.x, death.y, death.color));
                 }
 
-                let aiDeadCount = 0;
+                // Cull dead cycles, schedule respawns
+                let deadCount = 0;
                 for (let i = cycles.length - 1; i >= 0; i--) {
                     if (!cycles[i].alive) {
-                        const wasUser = cycles[i].isUser;
-                        if (wasUser) {
-                            crashCount++;
-                            if (statusEl) statusEl.textContent = 'DEREZZED';
-                            // Auto-respawn so a User cycle is always on the grid.
-                            // The fresh bike is in waiting state until the user
-                            // presses an arrow again.
-                            setTimeout(() => {
-                                if (controlMode) {
-                                    spawnUserCycle();
-                                    if (statusEl) statusEl.textContent = 'READY · PRESS ARROW';
-                                }
-                            }, 1400);
-                            userCycle = null;
-                        } else {
-                            aiDeadCount++;
-                        }
                         cycles.splice(i, 1);
+                        deadCount++;
                     }
                 }
-                for (let i = 0; i < aiDeadCount; i++) {
-                    setTimeout(spawnAICycle, 700 + Math.random() * 700);
+                for (let i = 0; i < deadCount; i++) {
+                    setTimeout(spawnCycle, 700 + Math.random() * 700);
                 }
 
+                // Draw bikes (on top of trails)
                 cycles.forEach(c => c.drawBike());
 
+                // Effects
                 for (let i = explosions.length - 1; i >= 0; i--) {
                     explosions[i].update();
                     explosions[i].draw();

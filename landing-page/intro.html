@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initializing Player Pulse — Matthew D. Smock / Lab</title>
+    <meta name="description" content="Decoding the Minecraft player genome — initializing dashboard.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            background: #000810;
+            color: #b7e4f4;
+            font-family: 'Courier New', 'Monaco', monospace;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #helix-canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .hud {
+            position: fixed;
+            color: #00f5ff;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 2px;
+            pointer-events: none;
+            text-shadow: 0 0 8px #00f5ff;
+            z-index: 10;
+        }
+
+        .hud-top-left { top: 24px; left: 24px; }
+        .hud-top-right { top: 24px; right: 24px; text-align: right; }
+        .hud-bottom-left { bottom: 24px; left: 24px; }
+        .hud-bottom-right { bottom: 24px; right: 24px; text-align: right; }
+
+        .hud-box {
+            border: 1px solid rgba(0, 245, 255, 0.4);
+            padding: 10px 14px;
+            background: rgba(0, 8, 16, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        .hud-box div { margin-bottom: 4px; }
+        .hud-box div:last-child { margin-bottom: 0; }
+        .hud-box .label { opacity: 0.6; font-size: 9px; }
+        .hud-box .value { color: #e0f8ff; font-size: 13px; }
+
+        .center-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .title-line {
+            font-size: 11px;
+            letter-spacing: 6px;
+            color: #00f5ff;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fade-in 1s ease-out 0.3s forwards;
+            text-shadow: 0 0 12px #00f5ff;
+        }
+
+        .subtitle-line {
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: rgba(183, 228, 244, 0.65);
+            margin-top: 8px;
+            opacity: 0;
+            animation: fade-in 1s ease-out 0.8s forwards;
+        }
+
+        .progress-track {
+            width: 320px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.15);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #00f5ff;
+            box-shadow: 0 0 10px #00f5ff;
+            animation: progress 5s ease-out forwards;
+        }
+
+        .progress-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: rgba(183, 228, 244, 0.7);
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+
+        .enter-button {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 36px;
+            background: rgba(0, 8, 16, 0.6);
+            border: 1px solid #00f5ff;
+            color: #00f5ff;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            opacity: 0;
+            animation: fade-in 0.8s ease-out 5.0s forwards;
+            transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+            text-shadow: 0 0 8px #00f5ff;
+            z-index: 30;
+        }
+
+        .enter-button:hover {
+            background: #00f5ff;
+            color: #000810;
+            box-shadow: 0 0 20px #00f5ff, 0 0 40px rgba(0, 245, 255, 0.4);
+            text-shadow: none;
+        }
+
+        .skip-link {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            color: rgba(183, 228, 244, 0.4);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            z-index: 30;
+            transition: color 0.2s;
+        }
+
+        .skip-link:hover { color: #00f5ff; }
+
+        /* Scanline overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 245, 255, 0) 0px,
+                rgba(0, 245, 255, 0) 2px,
+                rgba(0, 245, 255, 0.025) 3px,
+                rgba(0, 245, 255, 0) 4px
+            );
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes progress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        @media (max-width: 600px) {
+            .progress-track { width: 240px; }
+            .hud { font-size: 9px; letter-spacing: 1px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="helix-canvas"></canvas>
+    <div class="scanlines"></div>
+
+    <div class="hud hud-top-left">
+        <div class="hud-box">
+            <div class="label">// SYSTEM</div>
+            <div class="value">PLAYER PULSE v1.0</div>
+            <div class="label">// STATUS</div>
+            <div class="value" id="status">INITIALIZING...</div>
+        </div>
+    </div>
+
+    <div class="hud hud-top-right">
+        <div class="hud-box">
+            <div class="label">// SECTOR</div>
+            <div class="value">REDMOND // SEATTLE</div>
+            <div class="label">// OPERATOR</div>
+            <div class="value">M.D. SMOCK</div>
+        </div>
+    </div>
+
+    <div class="hud hud-bottom-left">
+        <div class="hud-box">
+            <div class="label">// RECORDS SEQUENCED</div>
+            <div class="value" id="rec-count">00000</div>
+            <div class="label">// PILLARS DECODED</div>
+            <div class="value">MARKETPLACE · REALMS · CoD</div>
+        </div>
+    </div>
+
+    <div class="center-overlay">
+        <div class="title-line">DECODING THE PLAYER GENOME</div>
+        <div class="subtitle-line">21,533 player voices · 5 sources · 15 years</div>
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-label" id="phase">Phase 01 // sequencing sources</div>
+    </div>
+
+    <a class="enter-button" href="https://minecraft-player-pulse.streamlit.app">
+        ▸ Enter Dashboard
+    </a>
+
+    <a class="skip-link" href="https://minecraft-player-pulse.streamlit.app">Skip intro →</a>
+
+    <script>
+    // ─── DNA Helix Canvas Animation ─────────────────────────────────────────
+    const canvas = document.getElementById('helix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    window.addEventListener('resize', () => {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W;
+        canvas.height = H;
+    });
+
+    // Color palette
+    const CYAN = '#00f5ff';
+    const CYAN_DIM = 'rgba(0, 245, 255, 0.35)';
+    const CYAN_FAINT = 'rgba(0, 245, 255, 0.12)';
+    const WHITE = '#e0f8ff';
+    const BG = '#000810';
+
+    // Snippets along the strands — short fragments that suggest player voice
+    // (kept generic; the dashboard itself shows verbatim quotes)
+    const STRAND_TEXT = [
+        '"player cap"', '"family plan"', '"refund"', '"my kid spent"',
+        '"realms server"', '"too expensive"', '"split screen"', '"minecoin"',
+        '"auto renew"', '"skin pack"', '"hero pass"', '"no reviews"',
+        '"in-app purchase"', '"stolen content"', '"creator program"',
+        '"adventure map"', '"branded content"', '"world template"',
+        '"friend code"', '"texture pack"', '"cross platform"', '"season pass"',
+    ];
+
+    // Background grid
+    function drawGrid(t) {
+        ctx.strokeStyle = 'rgba(0, 51, 68, 0.4)';
+        ctx.lineWidth = 0.5;
+        const spacing = 60;
+        const offset = (t * 0.3) % spacing;
+        for (let x = -spacing + offset; x < W; x += spacing) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, H);
+            ctx.stroke();
+        }
+        for (let y = -spacing + offset; y < H; y += spacing) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+        }
+    }
+
+    // Background drifting particles
+    const particles = [];
+    for (let i = 0; i < 80; i++) {
+        particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            size: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.5 + 0.2,
+        });
+    }
+
+    function drawParticles() {
+        ctx.fillStyle = CYAN;
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0) p.x = W;
+            if (p.x > W) p.x = 0;
+            if (p.y < 0) p.y = H;
+            if (p.y > H) p.y = 0;
+            ctx.globalAlpha = p.opacity;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        ctx.globalAlpha = 1;
+    }
+
+    // ─── DNA HELIX ──────────────────────────────────────────────────────────
+    // Two interleaved sinusoidal strands, rotating around the y-axis to simulate 3D.
+    //
+    // Math:
+    //   For each y-value, two points on the helix:
+    //     x_a = centerX + radius * cos(omega * y + t)
+    //     x_b = centerX + radius * cos(omega * y + t + PI)   // 180° offset
+    //   The "depth" of each point — its z-coordinate — drives:
+    //     - point size (perspective scaling)
+    //     - opacity (front = bright, back = dim)
+    //     - draw order (rungs sort by depth)
+    function drawHelix(t) {
+        const centerX = W / 2;
+        const topY = H * 0.15;
+        const bottomY = H * 0.85;
+        const helixHeight = bottomY - topY;
+        const radius = Math.min(W, H) * 0.10;
+        const omega = 0.018;  // vertical frequency
+        const steps = 80;
+        const stepHeight = helixHeight / steps;
+        const rotSpeed = 0.012;
+
+        const strandA = [];
+        const strandB = [];
+
+        for (let i = 0; i <= steps; i++) {
+            const y = topY + i * stepHeight;
+            const phase = i * stepHeight * omega + t * rotSpeed;
+
+            const cosA = Math.cos(phase);
+            const sinA = Math.sin(phase);
+            const xA = centerX + radius * cosA;
+            const zA = sinA;  // -1 (back) to 1 (front)
+
+            const cosB = Math.cos(phase + Math.PI);
+            const sinB = Math.sin(phase + Math.PI);
+            const xB = centerX + radius * cosB;
+            const zB = sinB;
+
+            strandA.push({ x: xA, y, z: zA, phase, i });
+            strandB.push({ x: xB, y, z: zB, phase, i });
+        }
+
+        // Draw rungs (connecting bars between strands) — sorted back-to-front
+        const rungs = [];
+        for (let i = 0; i < strandA.length; i += 2) {
+            const a = strandA[i];
+            const b = strandB[i];
+            const avgZ = (a.z + b.z) / 2;
+            rungs.push({ a, b, avgZ, i });
+        }
+        rungs.sort((p, q) => p.avgZ - q.avgZ);
+
+        rungs.forEach(({ a, b, avgZ, i }) => {
+            const depth = (avgZ + 1) / 2;  // 0 (back) to 1 (front)
+            const alpha = 0.15 + depth * 0.6;
+            ctx.strokeStyle = `rgba(0, 245, 255, ${alpha})`;
+            ctx.lineWidth = 0.6 + depth * 1.2;
+            ctx.shadowColor = CYAN;
+            ctx.shadowBlur = depth * 6;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+        });
+        ctx.shadowBlur = 0;
+
+        // Draw strands as polylines with depth-varying weight
+        function drawStrand(points, baseColor) {
+            for (let i = 1; i < points.length; i++) {
+                const p0 = points[i - 1];
+                const p1 = points[i];
+                const depth = ((p0.z + p1.z) / 2 + 1) / 2;
+                const alpha = 0.25 + depth * 0.75;
+                ctx.strokeStyle = baseColor.replace('ALPHA', alpha.toFixed(2));
+                ctx.lineWidth = 1 + depth * 2.5;
+                ctx.shadowColor = CYAN;
+                ctx.shadowBlur = depth * 10;
+                ctx.beginPath();
+                ctx.moveTo(p0.x, p0.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+        }
+
+        drawStrand(strandA, 'rgba(0, 245, 255, ALPHA)');
+        drawStrand(strandB, 'rgba(0, 245, 255, ALPHA)');
+
+        // Draw nodes on each strand
+        function drawNodes(points) {
+            points.forEach((p, idx) => {
+                if (idx % 4 !== 0) return;  // every 4th node
+                const depth = (p.z + 1) / 2;
+                const alpha = 0.4 + depth * 0.6;
+                const size = 1.5 + depth * 3;
+                ctx.fillStyle = `rgba(224, 248, 255, ${alpha})`;
+                ctx.shadowColor = CYAN;
+                ctx.shadowBlur = depth * 8;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+        }
+
+        drawNodes(strandA);
+        drawNodes(strandB);
+
+        // Render text labels along the strands — only on the FRONT side of the helix
+        // so they don't get crammed together on the back
+        ctx.font = '10px "Courier New", monospace';
+        ctx.textBaseline = 'middle';
+        for (let i = 0; i < strandA.length; i += 4) {
+            const p = strandA[i];
+            if (p.z > 0.4) {  // only when this node is forward-facing
+                const idx = ((i + Math.floor(t * 0.02)) % STRAND_TEXT.length + STRAND_TEXT.length) % STRAND_TEXT.length;
+                const label = STRAND_TEXT[idx];
+                const depth = (p.z + 1) / 2;
+                ctx.fillStyle = `rgba(224, 248, 255, ${0.5 + depth * 0.4})`;
+                ctx.textAlign = 'left';
+                ctx.fillText(label, p.x + 10, p.y);
+            }
+        }
+        for (let i = 2; i < strandB.length; i += 4) {
+            const p = strandB[i];
+            if (p.z > 0.4) {
+                const idx = ((i + 11 + Math.floor(t * 0.02)) % STRAND_TEXT.length + STRAND_TEXT.length) % STRAND_TEXT.length;
+                const label = STRAND_TEXT[idx];
+                const depth = (p.z + 1) / 2;
+                ctx.fillStyle = `rgba(224, 248, 255, ${0.5 + depth * 0.4})`;
+                ctx.textAlign = 'right';
+                ctx.fillText(label, p.x - 10, p.y);
+            }
+        }
+    }
+
+    // ─── HUD COUNTERS ────────────────────────────────────────────────────────
+    const TARGET_RECORDS = 21533;
+    const counterEl = document.getElementById('rec-count');
+    const statusEl = document.getElementById('status');
+    const phaseEl = document.getElementById('phase');
+    const phases = [
+        'Phase 01 // sequencing sources',
+        'Phase 02 // classifying pillars',
+        'Phase 03 // scoring sentiment',
+        'Phase 04 // ranking experiments',
+        'Phase 05 // ready',
+    ];
+    let counterStart = null;
+    const COUNTER_DURATION = 5000;
+    function tickCounter(ts) {
+        if (counterStart === null) counterStart = ts;
+        const elapsed = ts - counterStart;
+        const progress = Math.min(elapsed / COUNTER_DURATION, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.floor(eased * TARGET_RECORDS);
+        counterEl.textContent = value.toLocaleString().padStart(6, '0');
+
+        const phaseIdx = Math.min(Math.floor(progress * 5), 4);
+        phaseEl.textContent = phases[phaseIdx];
+
+        if (progress < 0.2) statusEl.textContent = 'INITIALIZING...';
+        else if (progress < 0.5) statusEl.textContent = 'CONNECTING SOURCES';
+        else if (progress < 0.85) statusEl.textContent = 'PARSING SIGNAL';
+        else if (progress < 1) statusEl.textContent = 'READY';
+        else statusEl.textContent = 'OPERATIONAL';
+    }
+
+    // ─── MAIN LOOP ─────────────────────────────────────────────────────────
+    let t = 0;
+    function frame(ts) {
+        ctx.fillStyle = BG;
+        ctx.fillRect(0, 0, W, H);
+        drawGrid(t);
+        drawParticles();
+        drawHelix(t);
+        tickCounter(ts);
+        t++;
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    </script>
+</body>
+</html>

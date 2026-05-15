@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initializing Player Pulse — Formation</title>
+    <meta name="description" content="Decoding the Minecraft player genome — player voices assembling.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            background: #000810;
+            color: #b7e4f4;
+            font-family: 'Courier New', 'Monaco', monospace;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #helix-canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .hud {
+            position: fixed;
+            color: #00f5ff;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 2px;
+            pointer-events: none;
+            text-shadow: 0 0 8px #00f5ff;
+            z-index: 10;
+            opacity: 0;
+            animation: hud-fade-in 0.8s ease-out 2.5s forwards;
+        }
+
+        .hud-top-left { top: 24px; left: 24px; }
+        .hud-top-right { top: 24px; right: 24px; text-align: right; }
+        .hud-bottom-left { bottom: 24px; left: 24px; }
+
+        .hud-box {
+            border: 1px solid rgba(0, 245, 255, 0.4);
+            padding: 10px 14px;
+            background: rgba(0, 8, 16, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        .hud-box div { margin-bottom: 4px; }
+        .hud-box div:last-child { margin-bottom: 0; }
+        .hud-box .label { opacity: 0.6; font-size: 9px; }
+        .hud-box .value { color: #e0f8ff; font-size: 13px; }
+
+        .center-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .title-line {
+            font-size: 11px;
+            letter-spacing: 6px;
+            color: #00f5ff;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fade-in 1s ease-out 3.5s forwards;
+            text-shadow: 0 0 12px #00f5ff;
+        }
+
+        .subtitle-line {
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: rgba(183, 228, 244, 0.65);
+            margin-top: 8px;
+            opacity: 0;
+            animation: fade-in 1s ease-out 4s forwards;
+        }
+
+        .progress-track {
+            width: 320px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.15);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fade-in 0.6s ease-out 3.8s forwards;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #00f5ff;
+            box-shadow: 0 0 10px #00f5ff;
+            width: 0%;
+            animation: progress 3.5s ease-out 3.8s forwards;
+        }
+
+        .progress-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: rgba(183, 228, 244, 0.7);
+            margin-top: 6px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fade-in 0.6s ease-out 4s forwards;
+        }
+
+        .enter-button {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 36px;
+            background: rgba(0, 8, 16, 0.6);
+            border: 1px solid #00f5ff;
+            color: #00f5ff;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            opacity: 0;
+            animation: fade-in 0.8s ease-out 7.5s forwards;
+            transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+            text-shadow: 0 0 8px #00f5ff;
+            z-index: 30;
+        }
+
+        .enter-button:hover {
+            background: #00f5ff;
+            color: #000810;
+            box-shadow: 0 0 20px #00f5ff, 0 0 40px rgba(0, 245, 255, 0.4);
+            text-shadow: none;
+        }
+
+        .skip-link {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            color: rgba(183, 228, 244, 0.4);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            z-index: 30;
+            transition: color 0.2s;
+        }
+
+        .skip-link:hover { color: #00f5ff; }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 245, 255, 0) 0px,
+                rgba(0, 245, 255, 0) 2px,
+                rgba(0, 245, 255, 0.025) 3px,
+                rgba(0, 245, 255, 0) 4px
+            );
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes hud-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes progress { from { width: 0%; } to { width: 100%; } }
+        @media (max-width: 600px) {
+            .progress-track { width: 240px; }
+            .hud { font-size: 9px; letter-spacing: 1px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="helix-canvas"></canvas>
+    <div class="scanlines"></div>
+
+    <div class="hud hud-top-left">
+        <div class="hud-box">
+            <div class="label">// SYSTEM</div>
+            <div class="value">PLAYER PULSE v1.0</div>
+            <div class="label">// STATUS</div>
+            <div class="value" id="status">SEQUENCING...</div>
+        </div>
+    </div>
+
+    <div class="hud hud-top-right">
+        <div class="hud-box">
+            <div class="label">// SECTOR</div>
+            <div class="value">REDMOND // SEATTLE</div>
+            <div class="label">// OPERATOR</div>
+            <div class="value">M.D. SMOCK</div>
+        </div>
+    </div>
+
+    <div class="hud hud-bottom-left">
+        <div class="hud-box">
+            <div class="label">// RECORDS SEQUENCED</div>
+            <div class="value" id="rec-count">00000</div>
+            <div class="label">// PILLARS DECODED</div>
+            <div class="value">MARKETPLACE · REALMS · CoD</div>
+        </div>
+    </div>
+
+    <div class="center-overlay">
+        <div class="title-line">DECODING THE PLAYER GENOME</div>
+        <div class="subtitle-line">21,533 player voices · 5 sources · 15 years</div>
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-label" id="phase">Phase 01 // sequencing sources</div>
+    </div>
+
+    <a class="enter-button" href="https://minecraft-player-pulse.streamlit.app">
+        ▸ Enter Dashboard
+    </a>
+
+    <a class="skip-link" href="https://minecraft-player-pulse.streamlit.app">Skip intro →</a>
+
+    <script>
+    // ─── DNA Helix FORMATION variant ────────────────────────────────────────
+    // Player-voice fragments start scattered across the screen edges, then
+    // swarm inward and snap into position on the rotating double helix.
+    // Once formation completes (~3 seconds), it behaves like the steady-state
+    // helix in intro.html.
+    //
+    // Phases:
+    //   0.0s - 0.5s    fragments appear scattered at the edges
+    //   0.5s - 3.5s    fragments tween toward target positions on the strands
+    //   2.5s+          helix lines and rungs draw in progressively
+    //   3.5s+          steady-state rotation, formation complete
+    const canvas = document.getElementById('helix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    window.addEventListener('resize', () => {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W;
+        canvas.height = H;
+    });
+
+    const CYAN = '#00f5ff';
+    const WHITE = '#e0f8ff';
+    const BG = '#000810';
+
+    const STRAND_TEXT = [
+        '"player cap"', '"family plan"', '"refund"', '"my kid spent"',
+        '"realms server"', '"too expensive"', '"split screen"', '"minecoin"',
+        '"auto renew"', '"skin pack"', '"hero pass"', '"no reviews"',
+        '"in-app purchase"', '"stolen content"', '"creator program"',
+        '"adventure map"', '"branded content"', '"world template"',
+        '"friend code"', '"texture pack"', '"cross platform"', '"season pass"',
+        '"DLC"', '"microtransaction"', '"parental controls"', '"bluey"',
+        '"plagiarized"', '"buyer\'s remorse"', '"cancel subscription"',
+    ];
+
+    // ─── BACKGROUND ─────────────────────────────────────────────────────────
+    function drawGrid(t) {
+        ctx.strokeStyle = 'rgba(0, 51, 68, 0.4)';
+        ctx.lineWidth = 0.5;
+        const spacing = 60;
+        const offset = (t * 0.3) % spacing;
+        for (let x = -spacing + offset; x < W; x += spacing) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0); ctx.lineTo(x, H);
+            ctx.stroke();
+        }
+        for (let y = -spacing + offset; y < H; y += spacing) {
+            ctx.beginPath();
+            ctx.moveTo(0, y); ctx.lineTo(W, y);
+            ctx.stroke();
+        }
+    }
+
+    const particles = [];
+    for (let i = 0; i < 80; i++) {
+        particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            size: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.5 + 0.2,
+        });
+    }
+    function drawParticles() {
+        ctx.fillStyle = CYAN;
+        particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+            if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+            ctx.globalAlpha = p.opacity;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        ctx.globalAlpha = 1;
+    }
+
+    // ─── HELIX GEOMETRY ─────────────────────────────────────────────────────
+    function helixPoint(strand, i, totalSteps, t) {
+        const centerX = W / 2;
+        const topY = H * 0.15;
+        const bottomY = H * 0.85;
+        const helixHeight = bottomY - topY;
+        const radius = Math.min(W, H) * 0.10;
+        const omega = 0.018;
+        const rotSpeed = 0.012;
+        const stepHeight = helixHeight / totalSteps;
+        const y = topY + i * stepHeight;
+        const phaseBase = i * stepHeight * omega + t * rotSpeed;
+        const phase = strand === 'A' ? phaseBase : phaseBase + Math.PI;
+        const cos = Math.cos(phase);
+        const sin = Math.sin(phase);
+        return {
+            x: centerX + radius * cos,
+            y: y,
+            z: sin,
+            phase,
+        };
+    }
+
+    // ─── SWARMING TEXT FRAGMENTS ────────────────────────────────────────────
+    // Each fragment has a random source position (off-screen edge) and a
+    // target position on the helix. We tween source → target over 0.5–3.5s,
+    // with a small per-fragment delay so they don't all arrive at once.
+    const FRAGMENT_COUNT = 24;
+    const FORMATION_START = 500;    // ms after page load
+    const FORMATION_END = 3500;     // ms — last fragment locks in by this time
+    const fragments = [];
+
+    function buildFragments() {
+        const stepCount = 80;
+        for (let i = 0; i < FRAGMENT_COUNT; i++) {
+            const strand = (i % 2 === 0) ? 'A' : 'B';
+            // Distribute fragments evenly along the strand
+            const stepIdx = Math.floor((i / FRAGMENT_COUNT) * stepCount);
+            // Random off-screen start position
+            const edge = Math.floor(Math.random() * 4);
+            let sx, sy;
+            switch (edge) {
+                case 0: sx = Math.random() * W;     sy = -50; break;
+                case 1: sx = W + 200;               sy = Math.random() * H; break;
+                case 2: sx = Math.random() * W;     sy = H + 50; break;
+                case 3: sx = -200;                  sy = Math.random() * H; break;
+            }
+            fragments.push({
+                strand,
+                stepIdx,
+                totalSteps: stepCount,
+                sourceX: sx,
+                sourceY: sy,
+                text: STRAND_TEXT[i % STRAND_TEXT.length],
+                // Each fragment gets a slight delay so they ripple in
+                delay: FORMATION_START + (i / FRAGMENT_COUNT) * (FORMATION_END - FORMATION_START) * 0.6,
+                duration: 1400,  // ms of travel
+                locked: false,
+            });
+        }
+    }
+    buildFragments();
+
+    function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
+
+    // ─── FULL-FORMED HELIX (drawn after formation completes, intensity fades in) ──
+    function drawHelixLines(t, intensity) {
+        if (intensity <= 0) return;
+        const steps = 80;
+        const points = { A: [], B: [] };
+        for (let i = 0; i <= steps; i++) {
+            points.A.push(helixPoint('A', i, steps, t));
+            points.B.push(helixPoint('B', i, steps, t));
+        }
+        const rungs = [];
+        for (let i = 0; i < points.A.length; i += 2) {
+            const a = points.A[i];
+            const b = points.B[i];
+            rungs.push({ a, b, avgZ: (a.z + b.z) / 2 });
+        }
+        rungs.sort((p, q) => p.avgZ - q.avgZ);
+        rungs.forEach(({ a, b, avgZ }) => {
+            const depth = (avgZ + 1) / 2;
+            const alpha = (0.15 + depth * 0.6) * intensity;
+            ctx.strokeStyle = `rgba(0, 245, 255, ${alpha})`;
+            ctx.lineWidth = 0.6 + depth * 1.2;
+            ctx.shadowColor = CYAN;
+            ctx.shadowBlur = depth * 6 * intensity;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+        });
+        ctx.shadowBlur = 0;
+        function drawStrand(arr) {
+            for (let i = 1; i < arr.length; i++) {
+                const p0 = arr[i - 1];
+                const p1 = arr[i];
+                const depth = ((p0.z + p1.z) / 2 + 1) / 2;
+                const alpha = (0.25 + depth * 0.75) * intensity;
+                ctx.strokeStyle = `rgba(0, 245, 255, ${alpha})`;
+                ctx.lineWidth = 1 + depth * 2.5;
+                ctx.shadowColor = CYAN;
+                ctx.shadowBlur = depth * 10 * intensity;
+                ctx.beginPath();
+                ctx.moveTo(p0.x, p0.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+        }
+        drawStrand(points.A);
+        drawStrand(points.B);
+        // Nodes
+        function drawNodes(arr) {
+            arr.forEach((p, idx) => {
+                if (idx % 4 !== 0) return;
+                const depth = (p.z + 1) / 2;
+                const alpha = (0.4 + depth * 0.6) * intensity;
+                const size = 1.5 + depth * 3;
+                ctx.fillStyle = `rgba(224, 248, 255, ${alpha})`;
+                ctx.shadowColor = CYAN;
+                ctx.shadowBlur = depth * 8 * intensity;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+        }
+        drawNodes(points.A);
+        drawNodes(points.B);
+    }
+
+    // ─── DRAW FRAGMENTS ───────────────────────────────────────────────────
+    function drawFragments(t, elapsedMs) {
+        ctx.font = '10px "Courier New", monospace';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = CYAN;
+
+        fragments.forEach(f => {
+            const tAfterDelay = elapsedMs - f.delay;
+            let progress;
+            if (tAfterDelay < 0) {
+                // Not started yet
+                return;
+            } else if (tAfterDelay < f.duration) {
+                progress = tAfterDelay / f.duration;
+            } else {
+                progress = 1;
+                f.locked = true;
+            }
+
+            const eased = easeOutCubic(progress);
+            const target = helixPoint(f.strand, f.stepIdx, f.totalSteps, t);
+
+            const x = f.sourceX + (target.x - f.sourceX) * eased;
+            const y = f.sourceY + (target.y - f.sourceY) * eased;
+
+            const depth = (target.z + 1) / 2;
+            // Locked fragments behave like the steady-state helix labels
+            // (only render when forward-facing).
+            // In-flight fragments always render.
+            if (f.locked && target.z <= 0.4) return;
+
+            // Glow intensity ramps up as fragments arrive
+            const glow = 0.3 + 0.7 * progress;
+            ctx.shadowBlur = 4 * glow;
+            ctx.fillStyle = f.locked
+                ? `rgba(224, 248, 255, ${0.5 + depth * 0.4})`
+                : `rgba(224, 248, 255, ${0.4 + progress * 0.5})`;
+
+            // Side-of-strand: A-strand labels to the right, B-strand to the left
+            if (f.strand === 'A') {
+                ctx.textAlign = 'left';
+                ctx.fillText(f.text, x + 10, y);
+            } else {
+                ctx.textAlign = 'right';
+                ctx.fillText(f.text, x - 10, y);
+            }
+        });
+
+        ctx.shadowBlur = 0;
+    }
+
+    // ─── HUD COUNTER ─────────────────────────────────────────────────────
+    const TARGET_RECORDS = 21533;
+    const counterEl = document.getElementById('rec-count');
+    const statusEl = document.getElementById('status');
+    const phaseEl = document.getElementById('phase');
+    const phases = [
+        'Phase 01 // sequencing sources',
+        'Phase 02 // classifying pillars',
+        'Phase 03 // scoring sentiment',
+        'Phase 04 // ranking experiments',
+        'Phase 05 // ready',
+    ];
+    const COUNTER_START_MS = 3500;  // wait for helix to form before counting
+    const COUNTER_DURATION = 3500;
+    function tickCounter(elapsedMs) {
+        if (elapsedMs < COUNTER_START_MS) {
+            counterEl.textContent = '00000';
+            return;
+        }
+        const t = Math.min((elapsedMs - COUNTER_START_MS) / COUNTER_DURATION, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = Math.floor(eased * TARGET_RECORDS);
+        counterEl.textContent = value.toLocaleString().padStart(6, '0');
+        const phaseIdx = Math.min(Math.floor(t * 5), 4);
+        phaseEl.textContent = phases[phaseIdx];
+        if (t < 0.2) statusEl.textContent = 'INITIALIZING...';
+        else if (t < 0.5) statusEl.textContent = 'CONNECTING SOURCES';
+        else if (t < 0.85) statusEl.textContent = 'PARSING SIGNAL';
+        else if (t < 1) statusEl.textContent = 'READY';
+        else statusEl.textContent = 'OPERATIONAL';
+    }
+
+    // ─── MAIN LOOP ───────────────────────────────────────────────────────
+    let t = 0;
+    const startTime = performance.now();
+    function frame(ts) {
+        const elapsedMs = ts - startTime;
+
+        ctx.fillStyle = BG;
+        ctx.fillRect(0, 0, W, H);
+        drawGrid(t);
+        drawParticles();
+
+        // Helix lines fade in starting at 2.5s, fully visible by 3.8s
+        const linesIntensity = Math.max(0, Math.min(1, (elapsedMs - 2500) / 1300));
+        drawHelixLines(t, linesIntensity);
+
+        drawFragments(t, elapsedMs);
+        tickCounter(elapsedMs);
+
+        t++;
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    </script>
+</body>
+</html>

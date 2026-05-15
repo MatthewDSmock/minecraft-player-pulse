@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matthew D. Smock — Data Science Lab</title>
+    <meta name="description" content="Senior data scientist working on game monetization, player experience, and applied analytics. Public lab for sentiment models, experiment design, and the writeups that survive.">
+    <meta property="og:title" content="Matthew D. Smock — Data Science Lab">
+    <meta property="og:description" content="Senior data scientist working on game monetization, player experience, and applied analytics.">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="brand">MATTHEW D. SMOCK / LAB</div>
+            <div class="nav-links">
+                <a href="#work">Work</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero hero-tron">
+            <canvas id="tron-canvas" aria-hidden="true"></canvas>
+            <div class="hero-tron-hud" aria-hidden="true">
+                <div class="hud-block hud-top-left">
+                    <div class="hud-label">// LAB</div>
+                    <div class="hud-value">SESSION 01</div>
+                </div>
+                <div class="hud-block hud-top-right">
+                    <div class="hud-label">// SECTOR</div>
+                    <div class="hud-value">SEATTLE</div>
+                </div>
+                <div class="hud-block hud-bottom-left">
+                    <div class="hud-label">// STATUS</div>
+                    <div class="hud-value">LAB OPEN</div>
+                </div>
+            </div>
+            <div class="hero-content">
+                <p class="eyebrow">Data Science Lab</p>
+                <h1>Player voice, monetization signal, and the experiments in between.</h1>
+                <p class="lede">
+                    I'm a senior data scientist working on the spaces where analytics, product strategy,
+                    and player experience meet. This lab is where the research lives — sentiment models,
+                    experiment design, dashboards I built to think out loud.
+                </p>
+                <div class="hero-cta">
+                    <a class="btn btn-primary" href="#work">See current work</a>
+                    <a class="btn btn-secondary" href="#contact">Get in touch</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="section">
+            <p class="eyebrow">Current research</p>
+            <h2>Player Pulse — Minecraft Monetization Sentiment</h2>
+            <p>
+                A rolling sentiment dashboard built from public Minecraft community channels —
+                Reddit, Mojang's official feedback site, Steam (Dungeons + Legends), and the
+                App Store across six English-speaking markets. Pillar-classified by Marketplace,
+                Realms, and Creator on Demand, with every verbatim quote preserved and linked
+                back to its source.
+            </p>
+            <div class="card-grid">
+                <a class="card" href="intro.html">
+                    <div class="card-tag">Live dashboard</div>
+                    <h3>Player Pulse →</h3>
+                    <p>
+                        Interactive Streamlit dashboard with auto-generated insights, time-series,
+                        country-level sentiment maps, and a verbatim-quote drawer. ~21,500 records
+                        across 15 years.
+                    </p>
+                </a>
+                <a class="card" href="https://github.com/MatthewDSmock/minecraft-player-pulse" target="_blank">
+                    <div class="card-tag">GitHub</div>
+                    <h3>Source code →</h3>
+                    <p>
+                        Five Python scrapers, pillar classifier, sentiment pipeline, and the dashboard
+                        itself. Fork it, run it on your own brand.
+                    </p>
+                </a>
+                <a class="card" href="https://github.com/MatthewDSmock/minecraft-player-pulse" target="_blank">
+                    <div class="card-tag">Write-up</div>
+                    <h3>Ranked experiment backlog →</h3>
+                    <p>
+                        Sixteen experiment ideas grounded in actual player feedback, ranked by
+                        signal strength × revenue upside × feasibility × strategic fit.
+                    </p>
+                </a>
+            </div>
+        </section>
+
+        <section id="about" class="section section-dark">
+            <p class="eyebrow">About</p>
+            <h2>Hi, I'm Matthew.</h2>
+            <p>
+                I've spent the last decade in data and analytics — Senior BIE / Data Scientist
+                roles at Microsoft (M365 and Partner Marketing), Target (Web &amp; Apps,
+                rebuilding company-wide attribution), AT&amp;T, and Amazon (Global Media
+                Strategy, including in-game advertising and Twitch). I hold an MBA in Marketing
+                Analytics and a Game Analytics certification from ELVTR.
+            </p>
+            <p>
+                Right now I'm focused on the spaces where data work directly shapes player
+                experience: monetization that doesn't degrade the product, recommendation systems
+                that surface long-tail creators, and experiment design that respects guardrails.
+            </p>
+            <p>
+                This site is the public face of my private lab — where I work through ideas in
+                the open, build small things to learn from, and post the writeups that survive.
+            </p>
+        </section>
+
+        <section id="contact" class="section">
+            <p class="eyebrow">Get in touch</p>
+            <h2>Let's talk.</h2>
+            <p>
+                I'm currently exploring opportunities in game analytics, marketplace strategy,
+                and applied data science. The fastest way to reach me is LinkedIn or email.
+            </p>
+            <div class="contact-links">
+                <a class="btn btn-primary" href="https://www.linkedin.com/in/matthewdsmock/" target="_blank">LinkedIn</a>
+                <a class="btn btn-secondary" href="mailto:matthewdsmock@gmail.com">Email</a>
+                <a class="btn btn-secondary" href="https://github.com/MatthewDSmock" target="_blank">GitHub</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Matthew D. Smock. Built in this lab.</p>
+    </footer>
+
+    <script>
+    // ─── Tron Light Cycle Background (Hero Section) ─────────────────────────
+    // Lightweight self-contained canvas animation. Lives in the hero only.
+    // Pauses when off-screen for performance.
+    (function() {
+        const canvas = document.getElementById('tron-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let W = 0, H = 0;
+        function resize() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            W = rect.width;
+            H = rect.height;
+            canvas.width = W;
+            canvas.height = H;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const CYAN = '#00f5ff';
+        const ORANGE = '#ff6a00';
+        const PURPLE = '#aa44ff';
+        const GRID = 'rgba(0, 51, 68, 0.6)';
+        const WHITE = '#e0f8ff';
+
+        let t = 0;
+
+        function drawGrid() {
+            ctx.strokeStyle = GRID;
+            ctx.lineWidth = 0.6;
+            const horizon = H * 0.52;
+            const rows = 14, cols = 22;
+            const vp = { x: W / 2, y: H * 0.62 };
+            for (let i = 0; i <= rows; i++) {
+                const y = horizon + (H - horizon) * (i / rows);
+                const fade = i / rows;
+                ctx.globalAlpha = fade * 0.7 + 0.05;
+                ctx.beginPath();
+                const xl = vp.x - vp.x * fade * 1.4;
+                const xr = vp.x + (W - vp.x) * fade * 1.4;
+                ctx.moveTo(xl, y); ctx.lineTo(xr, y);
+                ctx.stroke();
+            }
+            for (let j = -cols / 2; j <= cols / 2; j++) {
+                ctx.globalAlpha = 0.35;
+                ctx.beginPath();
+                const xBot = W / 2 + j * (W / cols);
+                ctx.moveTo(vp.x, horizon);
+                ctx.lineTo(xBot, H);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawHorizonGlow() {
+            const hy = H * 0.52;
+            ctx.globalAlpha = 0.20;
+            ctx.fillStyle = CYAN;
+            ctx.fillRect(0, hy - 2, W, 4);
+            ctx.globalAlpha = 0.08;
+            ctx.fillRect(0, hy - 14, W, 24);
+            ctx.globalAlpha = 1;
+        }
+
+        function drawStars() {
+            for (let i = 0; i < 100; i++) {
+                const sx = (i * 137.508 * 3) % W;
+                const sy = (i * 97.3 * 2) % (H * 0.5);
+                const br = 0.3 + 0.7 * Math.abs(Math.sin(t * 0.02 + i));
+                ctx.globalAlpha = br * 0.5;
+                ctx.fillStyle = WHITE;
+                ctx.fillRect(sx, sy, 1, 1);
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawCityline() {
+            const buildings = [
+                [0, H, 60, 80], [60, H, 50, 110], [110, H, 40, 60],
+                [150, H, 30, 140], [180, H, 45, 95], [225, H, 35, 75],
+                [W - 220, H, 60, 80], [W - 160, H, 50, 110],
+                [W - 110, H, 45, 95], [W - 65, H, 35, 75],
+            ];
+            buildings.forEach(([x, y, w, h]) => {
+                ctx.fillStyle = 'rgba(0, 13, 26, 0.85)';
+                ctx.strokeStyle = 'rgba(0, 34, 51, 0.8)';
+                ctx.lineWidth = 0.5;
+                ctx.fillRect(x, y - h, w, h);
+                ctx.strokeRect(x, y - h, w, h);
+                ctx.globalAlpha = 0.2;
+                ctx.fillStyle = '#00ffee';
+                for (let wx = x + 5; wx < x + w - 5; wx += 10) {
+                    for (let wy = y - h + 8; wy < y - 8; wy += 12) {
+                        if (((wx + wy + t / 30) | 0) % 5 < 2) {
+                            ctx.fillRect(wx, wy, 4, 5);
+                        }
+                    }
+                }
+                ctx.globalAlpha = 1;
+            });
+        }
+
+        class LightCycle {
+            constructor(x, y, dir, color, speed) {
+                this.x = x; this.y = y; this.dir = dir;
+                this.color = color; this.speed = speed;
+                this.trail = [{ x, y }];
+                this.maxTrail = 140;
+                this.turnTimer = Math.floor(Math.random() * 80 + 40);
+                this.size = 7;
+            }
+            update() {
+                this.x += Math.cos(this.dir) * this.speed;
+                this.y += Math.sin(this.dir) * this.speed;
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > this.maxTrail) this.trail.shift();
+                this.turnTimer--;
+                if (this.turnTimer <= 0) {
+                    this.dir += (Math.random() < 0.5 ? 1 : -1) * Math.PI / 2;
+                    this.turnTimer = Math.floor(Math.random() * 80 + 40);
+                }
+                const gy = H * 0.55;
+                if (this.x < 100 || this.x > W - 100 || this.y > H - 10 || this.y < gy + 20) {
+                    this.dir += Math.PI;
+                    this.turnTimer = 30;
+                }
+            }
+            draw() {
+                if (this.trail.length < 2) return;
+                ctx.save();
+                for (let i = 1; i < this.trail.length; i++) {
+                    const alpha = i / this.trail.length;
+                    ctx.globalAlpha = alpha * 0.85;
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = alpha * 2.5;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
+                    ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.dir);
+                ctx.beginPath();
+                ctx.moveTo(this.size, 0);
+                ctx.lineTo(-this.size, this.size * 0.5);
+                ctx.lineTo(-this.size * 0.5, 0);
+                ctx.lineTo(-this.size, -this.size * 0.5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+                ctx.restore();
+            }
+        }
+
+        const cycles = [];
+        function initCycles() {
+            cycles.length = 0;
+            const gy = H * 0.58;
+            cycles.push(new LightCycle(W * 0.25, gy + 60, 0, CYAN, 3.0));
+            cycles.push(new LightCycle(W * 0.50, gy + 100, Math.PI / 2, ORANGE, 2.6));
+            cycles.push(new LightCycle(W * 0.75, gy + 80, Math.PI, CYAN, 2.8));
+            cycles.push(new LightCycle(W * 0.40, gy + 140, -Math.PI / 2, PURPLE, 2.4));
+            cycles.push(new LightCycle(W * 0.65, gy + 120, Math.PI * 0.75, ORANGE, 2.7));
+        }
+        initCycles();
+        window.addEventListener('resize', initCycles);
+
+        function drawScanline() {
+            const sy = (t * 1.5) % H;
+            ctx.globalAlpha = 0.04;
+            ctx.fillStyle = CYAN;
+            ctx.fillRect(0, sy, W, 3);
+            ctx.globalAlpha = 1;
+        }
+
+        let isVisible = true;
+        const io = new IntersectionObserver((entries) => {
+            isVisible = entries[0].isIntersecting;
+        });
+        io.observe(canvas);
+
+        function frame() {
+            if (isVisible) {
+                ctx.fillStyle = '#000810';
+                ctx.fillRect(0, 0, W, H);
+                drawStars();
+                drawGrid();
+                drawHorizonGlow();
+                drawCityline();
+                cycles.forEach(c => { c.update(); c.draw(); });
+                drawScanline();
+                t++;
+            }
+            requestAnimationFrame(frame);
+        }
+        frame();
+    })();
+    </script>
+</body>
+</html>
+
