@@ -13,6 +13,7 @@ subreddits:
 # separate sentiment-modifier list rather than here.
 pillar_keywords:
   Marketplace:
+    # Original Reddit / Mojang vocabulary
     - marketplace
     - skin pack
     - skinpack
@@ -29,8 +30,70 @@ pillar_keywords:
     - bedrock store
     - in-game store
     - in game store
+    # Mobile / App Store vocabulary
+    - in-app purchase
+    - in app purchase
+    - iap
+    - microtransaction
+    - microtransactions
+    - micro transaction
+    - micro-transaction
+    - pay to play
+    - pay-to-play
+    - pay to win
+    - pay-to-win
+    - money grab
+    - cash grab
+    - greedy
+    - rip off
+    - rip-off
+    - ripoff
+    - too expensive
+    - overpriced
+    - free trial
+    - premium version
+    - paid version
+    - my child bought
+    - my child spent
+    - my kid bought
+    - my kid spent
+    - my son bought
+    - my son spent
+    - my daughter bought
+    - my daughter spent
+    - spent money
+    - spent real money
+    - wasted money
+    - wasted my money
+    - refund
+    - refunded
+    # Steam / paid-title vocabulary
+    - dlc
+    - season pass
+    - hero pass
+    - battle pass
+    - expansion pack
+    - content drop
+    - deluxe edition
+    - ultimate edition
+    - season 1
+    - season 2
+    - season 3
+    - season 4
+    - season 5
+    - season 6
+    - cosmetic
+    - cosmetics
+    - skins cost
+    - buy skins
+    - buy a skin
 
   Realms:
+    # Single-word base — App Store and casual community language uses these
+    # more often than the formal multi-word terms
+    - realm
+    - realms
+    # Original Reddit / Mojang vocabulary
     - realms plus
     - realm plus
     - realms server
@@ -45,6 +108,30 @@ pillar_keywords:
     - 10 player
     - 10-player
     - realms renewal
+    # Mobile-specific subscription vocabulary
+    - monthly subscription
+    - subscription cost
+    - cancel subscription
+    - auto renew
+    - auto-renew
+    - auto renewal
+    - auto-renewal
+    - automatic renewal
+    - forgot to cancel
+    - charged me again
+    - hidden subscription
+    # General multiplayer / Realms-adjacent terms
+    - join my server
+    - my server
+    - server hosting
+    - host a server
+    - dedicated server
+    - online server
+    - more players
+    - bigger server
+    - 20 players
+    - 50 players
+    - 100 players
 
   CreatorOnDemand:
     - creator program
@@ -58,6 +145,15 @@ pillar_keywords:
     - blockworks
     - mojang partner
     - creator dashboard
+    - hire a builder
+    - hire a creator
+    - commission a build
+    - made to order
+    - custom map
+    - custom skin
+    - custom build
+    - paid builder
+    - freelance builder
 
 scrape_limits:
   posts_per_subreddit: 500       # newest posts to consider per subreddit per run
