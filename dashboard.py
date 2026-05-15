@@ -57,17 +57,36 @@ def derive_device(subreddit_value: str) -> str:
 
 @st.cache_data(ttl=600)
 def load_data() -> pd.DataFrame:
-    if not MASTER_PATH.exists():
-        # Try to download from GitHub Releases (used by deployed instances)
-        with st.spinner("First-time setup: fetching dataset from GitHub Releases..."):
-            try:
-                from download_data import download
+    """Load the master parquet. Always attempts to fetch the latest from
+    GitHub Releases first, so the deployed app picks up new dataset versions
+    when the release is updated. Falls back to the on-disk copy if the
+    remote fetch fails (offline local dev, etc.).
+
+    Set SKIP_REMOTE_DOWNLOAD=1 in the environment to disable the remote fetch
+    entirely — useful for local development with freshly scraped data."""
+    import os
+
+    skip_remote = os.environ.get("SKIP_REMOTE_DOWNLOAD") == "1"
+
+    if not skip_remote:
+        try:
+            from download_data import download
+            with st.spinner("Syncing latest dataset from GitHub Releases..."):
                 ok = download()
-                if not ok:
+                if not ok and not MASTER_PATH.exists():
+                    st.error("Could not fetch dataset from GitHub Releases and no local copy available.")
                     return pd.DataFrame()
-            except Exception as e:
+        except Exception as e:
+            # Network error or import failure — fall back to local file if present
+            if not MASTER_PATH.exists():
                 st.error(f"Could not fetch dataset: {e}")
                 return pd.DataFrame()
+            st.warning(f"Could not fetch latest dataset ({e}); using on-disk copy.")
+
+    if not MASTER_PATH.exists():
+        st.error("No dataset available. Run `py download_data.py` or generate via scrapers.")
+        return pd.DataFrame()
+
     df = pd.read_parquet(MASTER_PATH)
     df["created_utc"] = pd.to_datetime(df["created_utc"], utc=True)
     df["created_date"] = df["created_utc"].dt.date
