@@ -1,13 +1,11 @@
+# Streamlit theme — Minecraft Player Pulse
+# Sets the global accent color and dark background palette to match the
+# Tron / DNA briefing-lab aesthetic of the landing page and Insights section.
+
 [theme]
 base = "dark"
-primaryColor = "#E24B4A"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#1A1D25"
-textColor = "#E8E6E0"
-font = "serif"
-
-[server]
-headless = true
-
-[browser]
-gatherUsageStats = false
+primaryColor = "#00f5ff"
+backgroundColor = "#0d0d1a"
+secondaryBackgroundColor = "#1a1a2e"
+textColor = "#fafafa"
+font = "sans serif"

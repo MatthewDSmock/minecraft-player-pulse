@@ -26,6 +26,130 @@ st.set_page_config(
 )
 
 
+# ---------- Global theme CSS injection ----------
+# Restyles Streamlit components that aren't controlled by config.toml:
+# multiselect filter pills (cyan instead of default red), active tab
+# underline, and a subtle cyan glow on section headlines. All overrides use
+# !important to win against Streamlit's default rules without depending on
+# version-specific class names beyond data-baseweb selectors.
+st.markdown(
+    """
+    <style>
+    /* ─── DNA HELIX BACKGROUND IN SIDEBAR ───────────────────────────────────
+       Subtle animated DNA helix behind the filter pills. Inline SVG with
+       CSS animation only — no JS, no iframe, no external assets. Renders
+       behind the pills with z-index, and pointer-events:none so clicks
+       pass through to the actual filter controls. */
+    [data-testid="stSidebar"] {
+        position: relative;
+        overflow: hidden;
+    }
+    [data-testid="stSidebar"]::before {
+        content: "";
+        position: absolute;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 240px;
+        height: 700px;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.18;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-60 0 120 700'><defs><filter id='glow'><feGaussianBlur stdDeviation='1.5' result='b'/><feMerge><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><g filter='url(%23glow)' stroke='%2300f5ff' fill='none' stroke-width='1.8'><path d='M -30 0 Q 30 50 -30 100 Q 30 150 -30 200 Q 30 250 -30 300 Q 30 350 -30 400 Q 30 450 -30 500 Q 30 550 -30 600 Q 30 650 -30 700'/><path d='M 30 0 Q -30 50 30 100 Q -30 150 30 200 Q -30 250 30 300 Q -30 350 30 400 Q -30 450 30 500 Q -30 550 30 600 Q -30 650 30 700'/></g><g stroke='%2300f5ff' stroke-width='1' opacity='0.6'><line x1='-30' y1='0' x2='30' y2='0'/><line x1='0' y1='50' x2='0' y2='50'/><line x1='30' y1='100' x2='-30' y2='100'/><line x1='0' y1='150' x2='0' y2='150'/><line x1='-30' y1='200' x2='30' y2='200'/><line x1='0' y1='250' x2='0' y2='250'/><line x1='30' y1='300' x2='-30' y2='300'/><line x1='0' y1='350' x2='0' y2='350'/><line x1='-30' y1='400' x2='30' y2='400'/><line x1='0' y1='450' x2='0' y2='450'/><line x1='30' y1='500' x2='-30' y2='500'/><line x1='0' y1='550' x2='0' y2='550'/><line x1='-30' y1='600' x2='30' y2='600'/><line x1='0' y1='650' x2='0' y2='650'/></g></svg>");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center top;
+        animation: dna-spin 8s linear infinite;
+    }
+    @keyframes dna-spin {
+        0%   { transform: translateX(-50%) scaleX(1); }
+        50%  { transform: translateX(-50%) scaleX(-1); }
+        100% { transform: translateX(-50%) scaleX(1); }
+    }
+    /* Make sure all sidebar content sits ABOVE the DNA layer */
+    [data-testid="stSidebar"] > div {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Sidebar filter pills - SOLID cyan fill matching the "Take Control"
+       button on the landing page. Every pill reads as an "active control"
+       in the same visual language as the landing page CTA. */
+    [data-baseweb="tag"] {
+        background-color: #00f5ff !important;
+        border: 1px solid #00f5ff !important;
+        box-shadow: 0 0 16px rgba(0, 245, 255, 0.55),
+                    0 0 4px rgba(0, 245, 255, 0.8) !important;
+    }
+    [data-baseweb="tag"] span,
+    [data-baseweb="tag"] svg {
+        color: #0d0d1a !important;
+        fill: #0d0d1a !important;
+        font-weight: 600 !important;
+    }
+
+    /* Active tab indicator and label - cyan */
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #00f5ff !important;
+    }
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #00f5ff !important;
+    }
+
+    /* Section headlines - cyan glow at moderate intensity. Visible enough
+       to read as a lab/Tron accent but not bright enough to compete with
+       the headline text itself. */
+    h1, h2, h3,
+    .main h1, .main h2, .main h3,
+    [data-testid="stMarkdownContainer"] h1,
+    [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stMarkdownContainer"] h3 {
+        text-shadow: 0 0 16px rgba(0, 245, 255, 0.40),
+                     0 0 6px rgba(0, 245, 255, 0.25) !important;
+    }
+
+    /* Streamlit radio button selected state - cyan dot */
+    [data-baseweb="radio"] [aria-checked="true"] > div:first-child {
+        background-color: #00f5ff !important;
+        border-color: #00f5ff !important;
+    }
+
+    /* Streamlit metric values (the big numbers under Current filter
+       selection) - cyan, matching the experiment metrics line. */
+    [data-testid="stMetricValue"] {
+        color: #00f5ff !important;
+    }
+    [data-testid="stMetricValue"] > div {
+        color: #00f5ff !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ---------- Chart color palette ----------
+# Sentiment colors: positive maps to bright lab green, neutral to muted
+# teal-gray, negative to coral. Brighter and more saturated than the
+# previous palette so they read as "lab readout" rather than "muted UI."
+SENTIMENT_COLORS = {
+    "positive": "#3dd87d",
+    "neutral": "#6b9bb0",
+    "negative": "#ff4d6d",
+}
+
+# Continuous scale used for choropleth and country bar chart: coral on the
+# negative end, muted teal-gray at neutral, bright cyan at positive. Aligns
+# the "data is positive" semantic with the cyan accent everywhere else.
+SENTIMENT_SCALE = [
+    [0.0, "#ff4d6d"],
+    [0.5, "#6b9bb0"],
+    [1.0, "#00f5ff"],
+]
+
+CYAN_ACCENT = "#00f5ff"
+
+
 # ---------- Data loading ----------
 
 # Map App Store 2-letter codes to ISO-3 for choropleth rendering
@@ -157,7 +281,7 @@ available_pillars = sorted(
 selected_pillars = st.sidebar.multiselect(
     "Pillars",
     options=available_pillars,
-    default=[p for p in available_pillars if p != "Unclassified"],
+    default=available_pillars,
 )
 
 sentiment_filter = st.sidebar.multiselect(
@@ -273,12 +397,23 @@ with tab_timeline:
         x="created_date",
         y="count",
         color="sentiment_label",
-        color_discrete_map={
-            "positive": "#1d9e75",
-            "neutral": "#888780",
-            "negative": "#E24B4A",
-        },
+        color_discrete_map=SENTIMENT_COLORS,
+        category_orders={"sentiment_label": ["positive", "neutral", "negative"]},
     )
+
+    # Belt-and-suspenders: explicitly force each trace's line and fill color.
+    # px.area's color_discrete_map should handle this, but for reasons that
+    # may involve Streamlit's Plotly figure cache or Plotly internal state,
+    # the map isn't always being applied. This loop guarantees the trace
+    # colors are exactly what SENTIMENT_COLORS specifies, regardless of how
+    # px.area constructed them.
+    for trace in fig_ts.data:
+        color = SENTIMENT_COLORS.get(trace.name)
+        if color:
+            trace.update(
+                line=dict(color=color, width=0),
+                fillcolor=color,
+            )
 
     # Overlay events as vertical lines if any are in range
     if not events.empty:
@@ -291,7 +426,7 @@ with tab_timeline:
                 fig_ts.add_vline(
                     x=event_x,
                     line_dash="dash",
-                    line_color="#3C3489",
+                    line_color="rgba(0,245,255,0.45)",
                     annotation_text=ev["event"][:30] + ("…" if len(ev["event"]) > 30 else ""),
                     annotation_position="top right",
                 )
@@ -340,7 +475,7 @@ with tab_map:
                 "record_count": ":,",
                 "neg_share": ":.1%",
             },
-            color_continuous_scale="RdYlGn",
+            color_continuous_scale=SENTIMENT_SCALE,
             range_color=(-0.5, 0.5),
             labels={
                 "mean_sentiment": "Avg sentiment",
@@ -357,14 +492,26 @@ with tab_map:
             oceancolor="#0d0d1a",
             showcountries=True,
             countrycolor="#3C3489",
+            projection_type="natural earth",
+            lataxis_range=[-60, 80],
+            lonaxis_range=[-180, 180],
         )
         fig_map.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=0, r=0, t=0, b=0),
             height=420,
+            dragmode=False,
         )
-        st.plotly_chart(fig_map, use_container_width=True)
+        st.plotly_chart(
+            fig_map,
+            use_container_width=True,
+            config={
+                "scrollZoom": False,
+                "displayModeBar": False,
+                "staticPlot": False,
+            },
+        )
 
         # Bar chart below the map for absolute comparison
         st.markdown("**Country breakdown — by mean sentiment**")
@@ -375,7 +522,7 @@ with tab_map:
             y="country_name",
             orientation="h",
             color="mean_sentiment",
-            color_continuous_scale="RdYlGn",
+            color_continuous_scale=SENTIMENT_SCALE,
             range_color=(-0.5, 0.5),
             text="record_count",
             labels={"mean_sentiment": "Avg sentiment", "country_name": ""},
@@ -401,7 +548,12 @@ with col_a:
         )
         .sort_values("count", ascending=False)
     )
-    fig_p = px.bar(pillar_df, x="pillar", y="count")
+    fig_p = px.bar(
+        pillar_df,
+        x="pillar",
+        y="count",
+        color_discrete_sequence=[CYAN_ACCENT],
+    )
     st.plotly_chart(fig_p, use_container_width=True)
 
 with col_b:
@@ -419,9 +571,13 @@ with col_b:
         y="source",
         orientation="h",
         text="n",
+        color="sentiment",
+        color_continuous_scale=SENTIMENT_SCALE,
+        range_color=(-0.5, 0.5),
         labels={"sentiment": "Mean compound sentiment", "n": "records"},
     )
     fig_s.update_traces(textposition="outside")
+    fig_s.update_layout(coloraxis_showscale=False)
     st.plotly_chart(fig_s, use_container_width=True)
 
 
