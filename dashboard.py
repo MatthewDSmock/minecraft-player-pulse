@@ -502,7 +502,8 @@ with tab_map:
             margin=dict(l=0, r=0, t=0, b=0),
             height=420,
             dragmode=False,
-        )
+            geo=dict(bgcolor="rgba(0,0,0,0)"),
+)
         st.plotly_chart(
             fig_map,
             use_container_width=True,
